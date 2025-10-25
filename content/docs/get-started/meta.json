@@ -1,0 +1,11 @@
+{
+  "title": "Get Started",
+  "icon": "Zap",
+  "pages": [
+    "account-setup",
+    "creating-project",
+    "api-key",
+    "key-generation",
+    "changing-passphrase"
+  ]
+}

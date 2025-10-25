@@ -1,0 +1,180 @@
+---
+title: Key Generation by Passphrase
+description: Generate secure encryption keys using passphrases with zero-key-storage architecture
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Key Generation by Passphrase
+
+Learn how to generate secure encryption keys using passphrases with Cipherion's zero-key-storage architecture.
+
+## Zero-Key-Storage Architecture
+
+Understanding how Cipherion generates keys without storing them
+
+Cipherion's revolutionary approach eliminates the need to store encryption keys. Instead, keys are dynamically derived from secure passphrases and context information, providing quantum-resistant security without the overhead of key management infrastructure.
+
+### Benefits
+
+- **No key storage vulnerabilities** - Keys are never stored anywhere
+- **Simplified key rotation** - Just change your passphrase
+- **Quantum-resistant encryption** - Advanced cryptographic algorithms
+- **Reduced attack surface** - No key database to compromise
+
+### How It Works
+
+- Passphrase + context = unique key
+- Keys generated on-demand
+- No persistent key storage
+- Deterministic key derivation
+
+## Passphrase Generation Process
+
+<Steps>
+<Step>
+### Create a Strong Passphrase
+
+Generate a secure passphrase for key derivation
+
+<Callout type="info" title="Passphrase Strength">
+Consider making your passphrase longer and including a mix of uppercase, lowercase, numbers, and special characters.
+</Callout>
+
+**Example Strong Passphrase:**
+```
+Correct-Horse-Battery-Staple-2024!
+```
+</Step>
+
+<Step>
+### Passphrase Requirements
+
+Security guidelines for creating strong passphrases
+
+#### Minimum Requirements
+
+- At least 12 characters long
+- Contains uppercase letters
+- Contains lowercase letters
+- Contains numbers
+- Contains special characters
+
+#### Best Practices
+
+- Use a passphrase instead of a password
+- Combine multiple unrelated words
+- Add numbers and symbols naturally
+- Avoid personal information
+- Don't reuse existing passwords
+- Consider using a password manager
+</Step>
+
+<Step>
+### Key Derivation Process
+
+How Cipherion generates keys from your passphrase
+
+#### Input Components
+
+- **Passphrase:** Your master passphrase
+- **Context:** Data field identifier
+- **Salt:** Cryptographic salt
+- **Project ID:** Your project identifier
+
+#### Security Features
+
+- 100,000+ PBKDF2 iterations
+- SHA-512 cryptographic hashing
+- Unique salt per operation
+- Context-aware key generation
+</Step>
+
+<Step>
+### Implementation Example
+
+How to use passphrase-based key generation in your application
+
+#### API Request Example
+
+```bash
+POST /v1/encrypt
+Content-Type: application/json
+
+{
+  "data": "john.doe@example.com",
+  "data_type": "email"
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "encrypted_data": "cph_encrypted_data_here",
+  "data_type": "email",
+  "request_id": "req_abc123"
+}
+```
+</Step>
+</Steps>
+
+## Security Considerations
+
+Important security practices for passphrase management
+
+### ✅ Do's
+
+- Store passphrases securely (password managers)
+- Keep changing passphrases for every alternative month
+- Use unique passphrases for different projects
+- Implement passphrase rotation policies
+- Use hardware security modules when possible
+- Enable audit logging for all operations
+
+### ❌ Don'ts
+
+- Never hardcode passphrases in source code
+- Don't transmit passphrases over insecure channels
+- Avoid using personal information in passphrases
+- Don't share passphrases between team members
+- Never log passphrases in application logs
+
+## Advanced Key Generation Features
+
+Additional options for enterprise security
+
+### Multi-Factor Key Generation
+
+Combine multiple authentication factors for enhanced security:
+
+- Passphrase + Hardware Token
+- Passphrase + Biometric Authentication
+- Passphrase + Time-based One-Time Password (TOTP)
+
+### Key Derivation Customization
+
+```json
+{
+  "passphrase": "your-passphrase",
+  "iterations": 150000,
+  "salt_length": 32,
+  "key_length": 256,
+  "hash_algorithm": "SHA-512"
+}
+```
+
+## Troubleshooting
+
+Common issues and solutions
+
+### Weak Passphrase Error
+Ensure your passphrase meets all security requirements listed above.
+
+### Key Derivation Timeout
+This may occur with very long passphrases or high iteration counts. Consider optimizing your settings.
+
+### Context Mismatch
+Ensure the same context is used for encryption and decryption operations.

@@ -1,0 +1,745 @@
+---
+title: API Key Reference
+description: Secure data encryption and decryption services with field-level and deep object encryption support
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+# API Key Reference
+
+Secure data encryption and decryption services with field-level and deep object encryption support.
+
+<Callout type="warn" title="Security Best Practices">
+**IMPORTANT SECURITY GUIDELINES:**
+
+- **Use Environment Variables:** Store your API_KEY, PROJECT_ID, and PASSPHRASE in environment variables. Never hardcode credentials.
+- **Server-Side Only:** Only use this API in server-side applications. Never expose credentials in client-side code.
+- **Passphrase Management:** Use the same passphrase configured in your dashboard. Store it securely.
+- **Credential Security:** Treat these credentials like database passwords or private keys.
+</Callout>
+
+## API Overview
+
+- **Base URL:** `https://api.cipherion.cloud/api/v1/crypto`
+- **Authentication:** API key via `x-api-key` header
+- **Content-Type:** `application/json`
+
+## Authentication
+
+All API requests require authentication using your API key.
+
+### Required Headers
+
+| Header | Type | Required | Description |
+|--------|------|----------|-------------|
+| `x-api-key` | string | Yes | Your project API key |
+| `Content-Type` | string | Yes | application/json |
+
+## API Endpoints
+
+<Tabs items={['Encrypt', 'Decrypt', 'Deep Encrypt', 'Deep Decrypt']}>
+  <Tab value="Encrypt">
+    ### Encrypt Data
+    
+    Encrypts a string of data using your encryption configuration.
+    
+    **Endpoint:** `POST /encrypt/:projectId`
+    
+    #### URL Parameters
+    
+    | Parameter | Type | Required | Description |
+    |-----------|------|----------|-------------|
+    | `projectId` | string | Yes | Your project identifier from the dashboard |
+    
+    #### Request Body
+    
+    ```json
+    {
+      "data": "sensitive information to encrypt",
+      "passphrase": "your-secure-passphrase"
+    }
+    ```
+    
+    #### Success Response (200 OK)
+    
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "Data encrypted successfully",
+      "data": {
+        "encrypted_output": "U2FsdGVkX1+jKX9Z3mHq7vK8pQ2..."
+      }
+    }
+    ```
+    
+    #### Error Responses
+    
+    **400 Bad Request - Missing required fields**
+    ```json
+    {
+      "success": false,
+      "statusCode": 400,
+      "message": "Missing required fields: projectId, x-api-key header, data, or passphrase"
+    }
+    ```
+    
+    **401 Unauthorized - Invalid API key**
+    ```json
+    {
+      "success": false,
+      "statusCode": 401,
+      "message": "Invalid API key"
+    }
+    ```
+    
+    **500 Internal Server Error**
+    ```json
+    {
+      "success": false,
+      "statusCode": 500,
+      "message": "Encryption failed",
+      "error": "Detailed error message"
+    }
+    ```
+  </Tab>
+  
+  <Tab value="Decrypt">
+    ### Decrypt Data
+    
+    Decrypts previously encrypted data.
+    
+    **Endpoint:** `POST /decrypt/:projectId`
+    
+    #### URL Parameters
+    
+    | Parameter | Type | Required | Description |
+    |-----------|------|----------|-------------|
+    | `projectId` | string | Yes | Your project identifier from the dashboard |
+    
+    #### Request Body
+    
+    ```json
+    {
+      "data": "U2FsdGVkX1+jKX9Z3mHq7vK8pQ2...",
+      "passphrase": "your-secure-passphrase"
+    }
+    ```
+    
+    #### Success Response (200 OK)
+    
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "Data decrypted successfully",
+      "data": {
+        "plaintext": "sensitive information to encrypt"
+      }
+    }
+    ```
+    
+    #### Error Responses
+    
+    **400 Bad Request**
+    ```json
+    {
+      "success": false,
+      "statusCode": 400,
+      "message": "Missing required fields: projectId, x-api-key header, encrypted_package, or passphrase"
+    }
+    ```
+    
+    **401 Unauthorized**
+    ```json
+    {
+      "success": false,
+      "statusCode": 401,
+      "message": "Invalid passphrase or API key"
+    }
+    ```
+  </Tab>
+  
+  <Tab value="Deep Encrypt">
+    ### Deep Encrypt
+    
+    Encrypts complex objects, arrays, or nested data structures recursively.
+    
+    **Endpoint:** `POST /deep_encrypt/:projectId`
+    
+    #### URL Parameters
+    
+    | Parameter | Type | Required | Description |
+    |-----------|------|----------|-------------|
+    | `projectId` | string | Yes | Your project identifier from the dashboard |
+    
+    #### Request Body
+    
+    ```json
+    {
+      "data": {
+        "user": {
+          "name": "John Doe",
+          "email": "john@example.com",
+          "ssn": "123-45-6789"
+        },
+        "payment": {
+          "cardNumber": "4111111111111111",
+          "cvv": "123"
+        }
+      },
+      "passphrase": "your-secure-passphrase"
+    }
+    ```
+    
+    #### Success Response (200 OK)
+    
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "Payload encrypted successfully",
+      "data": {
+        "encrypted": {
+          "user": {
+            "name": "U2FsdGVkX1+abc123...",
+            "email": "U2FsdGVkX1+def456...",
+            "ssn": "U2FsdGVkX1+ghi789..."
+          },
+          "payment": {
+            "cardNumber": "U2FsdGVkX1+jkl012...",
+            "cvv": "U2FsdGVkX1+mno345..."
+          }
+        },
+        "meta": {
+          "totalFields": 9,
+          "billableFields": 9,
+          "totalPrice": 0.09
+        }
+      }
+    }
+    ```
+    
+    #### Metadata Fields
+    
+    | Field | Type | Description |
+    |-------|------|-------------|
+    | `totalFields` | number | Total number of primitive fields processed |
+    | `billableFields` | number | Number of fields that count toward billing |
+    | `totalPrice` | number | Calculated price for the operation |
+  </Tab>
+  
+  <Tab value="Deep Decrypt">
+    ### Deep Decrypt
+    
+    Decrypts complex objects that were encrypted using deep encrypt.
+    
+    **Endpoint:** `POST /deep_decrypt/:projectId`
+    
+    #### URL Parameters
+    
+    | Parameter | Type | Required | Description |
+    |-----------|------|----------|-------------|
+    | `projectId` | string | Yes | Your project identifier from the dashboard |
+    
+    #### Request Body
+    
+    ```json
+    {
+      "encrypted": {
+        "user": {
+          "name": "U2FsdGVkX1+abc123...",
+          "email": "U2FsdGVkX1+def456...",
+          "ssn": "U2FsdGVkX1+ghi789..."
+        },
+        "payment": {
+          "cardNumber": "U2FsdGVkX1+jkl012...",
+          "cvv": "U2FsdGVkX1+mno345..."
+        }
+      },
+      "passphrase": "your-secure-passphrase"
+    }
+    ```
+    
+    #### Success Response (200 OK)
+    
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "Payload decrypted successfully",
+      "data": {
+        "data": {
+          "user": {
+            "name": "John Doe",
+            "email": "john@example.com",
+            "ssn": "123-45-6789"
+          },
+          "payment": {
+            "cardNumber": "4111111111111111",
+            "cvv": "123"
+          }
+        },
+        "meta": {
+          "totalFields": 9,
+          "billableFields": 9,
+          "totalPrice": 0.09
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Common Error Codes
+
+HTTP status codes and their meanings:
+
+| Status Code | Description |
+|-------------|-------------|
+| 200 | Success - Request completed successfully |
+| 400 | Bad Request - Missing required fields or invalid data |
+| 401 | Unauthorized - Invalid or missing API key |
+| 403 | Forbidden - Invalid project ID or insufficient permissions |
+| 500 | Internal Server Error - Server-side processing error |
+
+## Environment Setup
+
+Required environment variables for your application.
+
+### Create a .env file:
+
+```bash
+# API Configuration
+PROJECT_ID=your_project_id_here
+API_KEY=your_api_key_here
+PASSPHRASE=your_encryption_passphrase_here
+
+# Optional: API Base URL (if different from default)
+API_BASE_URL=https://api.cipherion.cloud/api/v1/crypto
+```
+
+### Obtaining Credentials
+
+<Steps>
+  <Step>
+    **Log in to Dashboard:** Access your encryption service dashboard
+  </Step>
+  
+  <Step>
+    **Create/Select Project:** Navigate to your project or create a new one
+  </Step>
+  
+  <Step>
+    **Generate API Key:** Create a new API key for your application
+  </Step>
+  
+  <Step>
+    **Set Passphrase:** Configure your encryption passphrase (this is the same passphrase you'll use in API calls)
+  </Step>
+  
+  <Step>
+    **Store Securely:** Save all credentials in environment variables, never in source code
+  </Step>
+</Steps>
+
+## Best Practices
+
+### 1. Credential Management
+
+<Tabs items={['Good', 'Bad']}>
+  <Tab value="Good">
+    **✅ GOOD - Using environment variables:**
+    
+    ```javascript
+    const config = {
+      projectId: process.env.PROJECT_ID,
+      apiKey: process.env.API_KEY,
+      passphrase: process.env.PASSPHRASE
+    };
+    ```
+  </Tab>
+  
+  <Tab value="Bad">
+    **❌ BAD - Hardcoded credentials:**
+    
+    ```javascript
+    const config = {
+      projectId: 'proj_12345',
+      apiKey: 'key_abcdef',
+      passphrase: 'my-secret-pass'
+    };
+    ```
+  </Tab>
+</Tabs>
+
+### 2. Server-Side Only
+
+<Tabs items={['Good', 'Bad']}>
+  <Tab value="Good">
+    **✅ GOOD - Backend API route:**
+    
+    ```javascript
+    // server.js (Node.js/Express)
+    app.post('/api/secure-data', async (req, res) => {
+      const encrypted = await encryptionService.encrypt(req.body.data);
+      res.json({ encrypted });
+    });
+    ```
+  </Tab>
+  
+  <Tab value="Bad">
+    **❌ BAD - Frontend exposure:**
+    
+    ```javascript
+    // frontend.js (React/Vue)
+    const encrypted = await fetch('https://encryption-api.com/encrypt', {
+      headers: { 'x-api-key': 'exposed_key' } // NEVER DO THIS
+    });
+    ```
+  </Tab>
+</Tabs>
+
+### 3. Passphrase Consistency
+
+Always use the same passphrase for encryption and decryption:
+
+```javascript
+// Store passphrase in environment
+const PASSPHRASE = process.env.PASSPHRASE;
+
+// Use consistently
+await encrypt(data, PASSPHRASE);
+await decrypt(encrypted, PASSPHRASE);
+```
+
+## Use Cases
+
+### Simple Encryption
+- API keys and tokens
+- Passwords and secrets
+- Single field values (SSN, credit card numbers)
+
+### Deep Encryption
+- User profile objects
+- Payment information structures
+- Complex nested data models
+- Entire database records
+
+## Code Examples
+
+<Tabs items={['JavaScript/Node.js', 'Python', 'Java', 'Go']}>
+  <Tab value="JavaScript/Node.js">
+    ### JavaScript/Node.js
+    
+    ```javascript
+    // encryption-service.js
+    require('dotenv').config();
+    const axios = require('axios');
+
+    class EncryptionService {
+      constructor() {
+        this.baseURL = process.env.API_BASE_URL || 
+          'https://api.cipherion.cloud/api/v1/crypto';
+        this.projectId = process.env.PROJECT_ID;
+        this.apiKey = process.env.API_KEY;
+        this.passphrase = process.env.PASSPHRASE;
+        this.validateConfig();
+      }
+      
+      validateConfig() {
+        if (!this.projectId || !this.apiKey || !this.passphrase) {
+          throw new Error('Missing required environment variables');
+        }
+      }
+      
+      async encrypt(data) {
+        const response = await this.makeRequest('/encrypt', { data });
+        return response.data.encrypted_output;
+      }
+      
+      async decrypt(encryptedData) {
+        const response = await this.makeRequest('/decrypt', 
+          { data: encryptedData });
+        return response.data.plaintext;
+      }
+      
+      async deepEncrypt(dataObject) {
+        const response = await this.makeRequest('/deep_encrypt', 
+          { data: dataObject });
+        return { 
+          encrypted: response.data.encrypted, 
+          meta: response.data.meta 
+        };
+      }
+      
+      async deepDecrypt(encryptedObject) {
+        const response = await this.makeRequest('/deep_decrypt', 
+          { encrypted: encryptedObject });
+        return { 
+          data: response.data.data, 
+          meta: response.data.meta 
+        };
+      }
+      
+      async makeRequest(endpoint, payload) {
+        const response = await axios.post(
+          `${this.baseURL}${endpoint}/${this.projectId}`,
+          { ...payload, passphrase: this.passphrase },
+          {
+            headers: {
+              'x-api-key': this.apiKey,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        return response.data;
+      }
+    }
+
+    module.exports = EncryptionService;
+    ```
+  </Tab>
+  
+  <Tab value="Python">
+    ### Python
+    
+    ```python
+    # encryption_service.py
+    import os
+    import requests
+    from typing import Dict, Any
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
+    class EncryptionService:
+        """Complete encryption service with all endpoints"""
+        
+        def __init__(self):
+            self.base_url = os.getenv('API_BASE_URL', 
+                'https://api.cipherion.cloud/api/v1/crypto')
+            self.project_id = os.getenv('PROJECT_ID')
+            self.api_key = os.getenv('API_KEY')
+            self.passphrase = os.getenv('PASSPHRASE')
+            
+            self._validate_config()
+            
+            self.headers = {
+                'x-api-key': self.api_key,
+                'Content-Type': 'application/json'
+            }
+        
+        def _validate_config(self):
+            if not all([self.project_id, self.api_key, self.passphrase]):
+                raise ValueError('Missing required environment variables')
+        
+        def encrypt(self, data: str) -> str:
+            """Encrypt a string"""
+            response = self._make_request('/encrypt', {'data': data})
+            return response['data']['encrypted_output']
+        
+        def decrypt(self, encrypted_data: str) -> str:
+            """Decrypt encrypted data"""
+            response = self._make_request('/decrypt', {'data': encrypted_data})
+            return response['data']['plaintext']
+        
+        def deep_encrypt(self, data_object: Any) -> Dict[str, Any]:
+            """Deep encrypt complex objects"""
+            response = self._make_request('/deep_encrypt', {'data': data_object})
+            return {
+                'encrypted': response['data']['encrypted'],
+                'meta': response['data']['meta']
+            }
+        
+        def deep_decrypt(self, encrypted_object: Any) -> Dict[str, Any]:
+            """Deep decrypt complex objects"""
+            response = self._make_request('/deep_decrypt', 
+                {'encrypted': encrypted_object})
+            return {
+                'data': response['data']['data'],
+                'meta': response['data']['meta']
+            }
+        
+        def _make_request(self, endpoint: str, payload: Dict) -> Dict:
+            url = f'{self.base_url}{endpoint}/{self.project_id}'
+            payload['passphrase'] = self.passphrase
+            
+            response = requests.post(url, json=payload, headers=self.headers)
+            response.raise_for_status()
+            
+            return response.json()
+    ```
+  </Tab>
+  
+  <Tab value="Java">
+    ### Java
+    
+    ```java
+    import java.net.http.*;
+    import org.json.JSONObject;
+    import io.github.cdimascio.dotenv.Dotenv;
+
+    public class EncryptionService {
+        private final String baseUrl;
+        private final String projectId;
+        private final String apiKey;
+        private final String passphrase;
+        private final HttpClient client;
+        
+        public EncryptionService() {
+            Dotenv dotenv = Dotenv.load();
+            this.baseUrl = "https://api.cipherion.cloud/api/v1/crypto";
+            this.projectId = dotenv.get("PROJECT_ID");
+            this.apiKey = dotenv.get("API_KEY");
+            this.passphrase = dotenv.get("PASSPHRASE");
+            this.client = HttpClient.newHttpClient();
+            
+            if (projectId == null || apiKey == null || passphrase == null) {
+                throw new IllegalStateException("Missing required environment variables");
+            }
+        }
+        
+        public String encrypt(String data) throws Exception {
+            JSONObject payload = new JSONObject();
+            payload.put("data", data);
+            payload.put("passphrase", passphrase);
+            
+            HttpRequest request = buildRequest("/encrypt/" + projectId, payload);
+            HttpResponse<String> response = client.send(request, 
+                HttpResponse.BodyHandlers.ofString());
+            
+            return handleResponse(response, "encrypted_output");
+        }
+        
+        public String decrypt(String encryptedData) throws Exception {
+            JSONObject payload = new JSONObject();
+            payload.put("data", encryptedData);
+            payload.put("passphrase", passphrase);
+            
+            HttpRequest request = buildRequest("/decrypt/" + projectId, payload);
+            HttpResponse<String> response = client.send(request, 
+                HttpResponse.BodyHandlers.ofString());
+            
+            return handleResponse(response, "plaintext");
+        }
+        
+        private HttpRequest buildRequest(String endpoint, JSONObject payload) {
+            return HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + endpoint))
+                .header("x-api-key", apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+                .build();
+        }
+    }
+    ```
+  </Tab>
+  
+  <Tab value="Go">
+    ### Go
+    
+    ```go
+    package encryption
+
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io"
+        "net/http"
+        "os"
+        "github.com/joho/godotenv"
+    )
+
+    type Service struct {
+        BaseURL    string
+        ProjectID  string
+        APIKey     string
+        Passphrase string
+        Client     *http.Client
+    }
+
+    func NewService() (*Service, error) {
+        err := godotenv.Load()
+        if err != nil {
+            return nil, fmt.Errorf("error loading .env file: %v", err)
+        }
+        
+        projectID := os.Getenv("PROJECT_ID")
+        apiKey := os.Getenv("API_KEY")
+        passphrase := os.Getenv("PASSPHRASE")
+        
+        if projectID == "" || apiKey == "" || passphrase == "" {
+            return nil, fmt.Errorf("missing required environment variables")
+        }
+        
+        return &Service{
+            BaseURL:    "https://api.cipherion.cloud/api/v1/crypto",
+            ProjectID:  projectID,
+            APIKey:     apiKey,
+            Passphrase: passphrase,
+            Client:     &http.Client{},
+        }, nil
+    }
+
+    func (s *Service) Encrypt(data string) (string, error) {
+        url := fmt.Sprintf("%s/encrypt/%s", s.BaseURL, s.ProjectID)
+        payload := map[string]string{
+            "data":       data,
+            "passphrase": s.Passphrase,
+        }
+        
+        var result map[string]interface{}
+        err := s.makeRequest("POST", url, payload, &result)
+        if err != nil {
+            return "", err
+        }
+        
+        return result["data"].(map[string]interface{})["encrypted_output"].(string), nil
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Frequently Asked Questions
+
+<Callout type="info">
+**Q: Can I use different passphrases for different data?**
+
+A: While technically possible, it's recommended to use the same passphrase that you configured in the dashboard for consistency. If you need to segment data with different passphrases, consider using separate projects.
+</Callout>
+
+<Callout type="warn">
+**Q: What happens if I lose my passphrase?**
+
+A: Encrypted data cannot be recovered without the correct passphrase. Always store your passphrase securely and consider having a secure backup mechanism.
+</Callout>
+
+<Callout type="info">
+**Q: Can I use this API from mobile apps?**
+
+A: Only if you implement a backend proxy. Never expose API credentials directly in mobile apps. Create a backend service that handles encryption/decryption and communicates with your mobile app.
+</Callout>
+
+<Callout type="info">
+**Q: What's the difference between encrypt and deep_encrypt?**
+
+- `encrypt`: Encrypts simple string data
+- `deep_encrypt`: Recursively encrypts complex objects, arrays, and nested structures while preserving the structure
+</Callout>
+
+<Callout type="info">
+**Q: Is there a size limit for encryption?**
+
+A: The API accepts payloads up to 15MB. Consider chunking larger data or using compression before encryption.
+</Callout>
+
+## Support
+
+For technical support, feature requests, or bug reports, contact us at:
+
+- **Email:** support@cipherion.cloud
+- **Documentation:** https://docs.cipherion.cloud

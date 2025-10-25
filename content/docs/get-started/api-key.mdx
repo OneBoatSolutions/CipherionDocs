@@ -1,0 +1,137 @@
+---
+title: Setting up API Key
+description: Generate and configure API keys to authenticate your applications
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+
+# Setting up API Key
+
+Generate and configure API keys to authenticate your applications with Cipherion's encryption services.
+
+<Callout title="Prerequisites">
+Ensure your project is created and you have the necessary permissions to generate API keys.
+</Callout>
+
+## API Key Generation Process
+
+<Steps>
+<Step>
+### Navigate to Credentials Section
+
+Access the API key management interface
+
+1. Go to your project dashboard in the Cipherion console
+2. Navigate to "Credentials" → "API Keys"
+3. Click "Generate New API Key" button
+</Step>
+
+<Step>
+### Configure Key Permissions (Coming Soon...)
+
+Set appropriate scopes and permissions for your API key
+
+#### Key Name and Description
+
+Give your API key a descriptive name to help identify its purpose.
+
+#### Key Permissions
+
+- ✓ **Encrypt Data** (Required)
+- ✓ **Decrypt Data** (Required)
+- ☐ Tokenize Data
+- ☐ Access Audit Logs
+
+#### Environment
+
+Select the environment where this API key will be used.
+
+#### Rate Limits
+
+Configure request rate limits for this API key to prevent abuse.
+</Step>
+
+<Step>
+### Generate and Secure Your Key
+
+Create your API key and store it securely
+
+Click the button below to generate your API key. Make sure to copy and store it securely as it will only be shown once.
+
+<Callout type="warning" title="Important">
+Your API key will only be displayed once. Make sure to copy it and store it in a secure location.
+</Callout>
+
+**Generated API Key:**
+```
+cph_sk_live_1234567890abcdefghijklmnopqrstuvwxyz
+```
+</Step>
+
+<Step>
+### Configure Environment Variables
+
+Set up your application environment
+
+```bash title=".env"
+# .env file
+CIPHERION_API_KEY=your_api_key_here
+CIPHERION_PROJECT_ID=proj_abc123def456ghi789
+CIPHERION_ENVIRONMENT=production
+
+# Optional: API endpoint
+CIPHERION_API_ENDPOINT=https://api.cipherion.com
+```
+
+#### Security Best Practices
+
+- Use environment variables to store API keys
+- Never hardcode API keys in your source code
+- Use different keys for different environments
+- Regularly rotate your API keys
+- Monitor API key usage and set up alerts
+</Step>
+</Steps>
+
+## Testing Your API Key
+
+Verify your API key is working correctly
+
+### Quick Test with cURL
+
+```bash
+curl -X POST https://api.cipherion.com/v1/encrypt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": "test@example.com",
+    "data_type": "email"
+  }'
+```
+
+### Expected Response
+
+```json
+{
+  "success": true,
+  "encrypted_data": "cph_encrypted_...",
+  "data_type": "email",
+  "encryption_method": "field_level",
+  "request_id": "req_123456789"
+}
+```
+
+## Troubleshooting
+
+Common issues and solutions
+
+### 401 Unauthorized Error
+Check that your API key is correctly formatted and has the required permissions.
+
+### 429 Rate Limit Exceeded
+You've exceeded your rate limits. Consider implementing exponential backoff or contact support to increase limits.
+
+### 403 Forbidden
+Your API key doesn't have permission for this operation. Review and update key permissions.

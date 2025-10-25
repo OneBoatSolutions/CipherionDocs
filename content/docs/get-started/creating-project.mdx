@@ -1,0 +1,155 @@
+---
+title: Creating a Project
+description: Set up your first Cipherion project and configure security policies
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+
+# Creating a Project
+
+Set up your first Cipherion project and configure security policies to start protecting your data.
+
+<Callout title="Prerequisites">
+Ensure your account setup is complete and you have organization admin privileges.
+</Callout>
+
+## Project Creation Process
+
+<Steps>
+<Step>
+### Initialize New Project
+
+Create and name your encryption project
+
+1. Navigate to the Projects dashboard in your Cipherion console
+2. Click "Create New Project" button
+3. Enter a descriptive project name (e.g., "Customer Data Protection", "Medical Records Encryption")
+4. Add optional project description and tags for organization
+5. Select your project environment
+
+#### Project Naming Best Practices
+
+- Use descriptive names that indicate the data type or use case
+- Include environment indicators
+- Keep names concise but meaningful
+- Avoid special characters or spaces
+</Step>
+
+<Step>
+### Data Classification Setup (Coming Soon...)
+
+Define data types and sensitivity levels
+
+#### Configure Data Types:
+
+**Personal Identifiable Information (PII)**  
+Names • Emails • Phone Numbers • Addresses
+
+**Payment Card Information (PCI)**  
+Card Numbers • CVV • Expiry Dates
+
+**Protected Health Information (PHI)**  
+Medical Records • Patient IDs • Diagnoses
+
+**Financial Data**  
+Account Numbers • SSN • Tax IDs
+</Step>
+
+<Step>
+### Security Policy Configuration (Coming Soon...)
+
+Set encryption methods and access controls
+
+#### Encryption Methods
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+  <div className="border rounded-lg p-4 dark:border-gray-700">
+    <strong>Field-Level Encryption</strong> (Recommended)
+  </div>
+  <div className="border rounded-lg p-4 dark:border-gray-700">
+    <strong>Dynamic Tokenization</strong>
+  </div>
+  <div className="border rounded-lg p-4 dark:border-gray-700">
+    <strong>Format-Preserving Encryption</strong>
+  </div>
+  <div className="border rounded-lg p-4 dark:border-gray-700">
+    <strong>Data Masking</strong>
+  </div>
+</div>
+
+#### Access Control Settings
+
+- Role-based access control (RBAC)
+- IP whitelisting
+- Time-based access restrictions
+- Audit logging enabled
+</Step>
+
+<Step>
+### Compliance & Data Residency (Coming Soon...)
+
+Configure regulatory compliance and data location requirements
+
+#### Compliance Frameworks
+
+<Cards>
+  <Card title="GDPR" icon="Shield">
+    EU General Data Protection Regulation
+  </Card>
+  <Card title="HIPAA" icon="Heart">
+    Health Insurance Portability Act
+  </Card>
+  <Card title="CreditCard" icon="CreditCard">
+    Payment Card Industry Standards
+  </Card>
+  <Card title="SOX" icon="FileText">
+    Sarbanes-Oxley Act
+  </Card>
+</Cards>
+
+#### Data Residency Options
+
+Select a region where your data will be processed and stored.
+</Step>
+
+<Step>
+### Project Finalization
+
+Review settings and activate your project
+
+**Final Review Checklist:**
+- ✓ Project name and description configured
+- ✓ Data classification and sensitivity levels defined
+- ✓ Security policies and encryption methods selected
+- ✓ Compliance frameworks and data residency configured
+- ✓ Access controls and audit settings enabled
+</Step>
+</Steps>
+
+<Callout type="success" title="Project Created Successfully!">
+Your project is now ready for API key generation and integration.
+
+**Project ID:** `proj_abc123def456ghi789`
+</Callout>
+
+## Best Practices for Project Setup
+
+Tips to optimize your Cipherion project configuration
+
+### Security Configuration
+
+- Always enable audit logging for compliance and monitoring
+- Use the most restrictive access controls that still allow your application to function
+- Regularly review and update your security policies
+
+### Data Classification
+
+- Start with a conservative approach—you can always relax restrictions later
+- Clearly document what data types are included in each classification
+- Consider future data types your application might handle
+
+## What Next?
+
+Now that your project is created, proceed to generate API keys to start integrating Cipherion with your applications.
