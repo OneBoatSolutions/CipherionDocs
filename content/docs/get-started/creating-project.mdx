@@ -6,6 +6,7 @@ description: Set up your first Cipherion project and configure security policies
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Shield, Lock, Eye, Key, Code, FileText, BookOpen, Package, Heart, CreditCard, HeartPlus } from 'lucide-react';
 
 # Creating a Project
 
@@ -95,16 +96,16 @@ Configure regulatory compliance and data location requirements
 #### Compliance Frameworks
 
 <Cards>
-  <Card title="GDPR" icon="Shield">
+  <Card title="GDPR" icon={<Shield />}>
     EU General Data Protection Regulation
   </Card>
-  <Card title="HIPAA" icon="Heart">
+  <Card title="HIPAA" icon={<HeartPlus />}>
     Health Insurance Portability Act
   </Card>
-  <Card title="CreditCard" icon="CreditCard">
+  <Card title="CreditCard" icon={<CreditCard />}>
     Payment Card Industry Standards
   </Card>
-  <Card title="SOX" icon="FileText">
+  <Card title="SOX" icon={<FileText />}>
     Sarbanes-Oxley Act
   </Card>
 </Cards>
