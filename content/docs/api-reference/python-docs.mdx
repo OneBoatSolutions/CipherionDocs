@@ -1,0 +1,384 @@
+---
+title: Python Code Examples
+description: Complete code examples for integrating Cipherion encryption API with Python applications
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+
+### Setup
+
+```bash
+pip install requests python-dotenv
+```
+
+### Environment Configuration
+
+```bash title=".env"
+PROJECT_ID=your_project_id
+API_KEY=your_api_key
+PASSPHRASE=your_passphrase
+```
+
+<Callout type="warn">
+Never commit your `.env` file to version control. Add it to your `.gitignore` file.
+</Callout>
+
+### Simple Encryption
+
+```python title="encrypt.py"
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BASE_URL = 'https://your-api-domain.com/api/v1/crypto'
+PROJECT_ID = os.getenv('PROJECT_ID')
+API_KEY = os.getenv('API_KEY')
+PASSPHRASE = os.getenv('PASSPHRASE')
+
+def encrypt_data(data):
+    url = f'{BASE_URL}/encrypt/{PROJECT_ID}'
+    
+    headers = {
+        'x-api-key': API_KEY,
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'data': data,
+        'passphrase': PASSPHRASE
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        
+        result = response.json()
+        encrypted_output = result['data']['encrypted_output']
+        print(f'Encrypted: {encrypted_output}')
+        return encrypted_output
+    except requests.exceptions.RequestException as e:
+        print(f'Encryption failed: {e}')
+        raise
+
+// Usage
+if __name__ == '__main__':
+    encrypted = encrypt_data('sensitive information to encrypt')
+    print(f'Success: {encrypted}')
+```
+
+### Simple Decryption
+
+```python title="decrypt.py"
+def decrypt_data(encrypted_data):
+    url = f'{BASE_URL}/decrypt/{PROJECT_ID}'
+    
+    headers = {
+        'x-api-key': API_KEY,
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'data': encrypted_data,
+        'passphrase': PASSPHRASE
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        
+        result = response.json()
+        plaintext = result['data']['plaintext']
+        print(f'Decrypted: {plaintext}')
+        return plaintext
+    except requests.exceptions.RequestException as e:
+        print(f'Decryption failed: {e}')
+        raise
+
+// Usage
+if __name__ == '__main__':
+    plaintext = decrypt_data('U2FsdGVkX1+jKX9Z3mHq7vK8pQ2...')
+    print(f'Success: {plaintext}')
+```
+
+### Deep Encryption
+
+```python title="deep_encrypt.py"
+def deep_encrypt(data_object):
+    url = f'{BASE_URL}/deep_encrypt/{PROJECT_ID}'
+    
+    headers = {
+        'x-api-key': API_KEY,
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'data': data_object,
+        'passphrase': PASSPHRASE
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        
+        result = response.json()
+        encrypted = result['data']['encrypted']
+        meta = result['data']['meta']
+        
+        print(f'Encrypted object: {encrypted}')
+        print(f'Metadata: {meta}')
+        
+        return result['data']
+    except requests.exceptions.RequestException as e:
+        print(f'Deep encryption failed: {e}')
+        raise
+
+// Usage
+if __name__ == '__main__':
+    user_data = {
+        'user': {
+            'name': 'John Doe',
+            'email': 'john@example.com',
+            'ssn': '123-45-6789'
+        },
+        'payment': {
+            'cardNumber': '4111111111111111',
+            'cvv': '123'
+        }
+    }
+    
+    result = deep_encrypt(user_data)
+    print(f'Success: {result}')
+```
+
+### Deep Decryption
+
+```python title="deep_decrypt.py"
+def deep_decrypt(encrypted_object):
+    url = f'{BASE_URL}/deep_decrypt/{PROJECT_ID}'
+    
+    headers = {
+        'x-api-key': API_KEY,
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'encrypted': encrypted_object,
+        'passphrase': PASSPHRASE
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        
+        result = response.json()
+        decrypted = result['data']['data']
+        meta = result['data']['meta']
+        
+        print(f'Decrypted object: {decrypted}')
+        print(f'Metadata: {meta}')
+        
+        return result['data']
+    except requests.exceptions.RequestException as e:
+        print(f'Deep decryption failed: {e}')
+        raise
+
+// Usage
+if __name__ == '__main__':
+    encrypted_data = {
+        'user': {
+            'name': 'U2FsdGVkX1+abc123...',
+            'email': 'U2FsdGVkX1+def456...',
+            'ssn': 'U2FsdGVkX1+ghi789...'
+        },
+        'payment': {
+            'cardNumber': 'U2FsdGVkX1+jkl012...',
+            'cvv': 'U2FsdGVkX1+mno345...'
+        }
+    }
+    
+    result = deep_decrypt(encrypted_data)
+    print(f'Success: {result}')
+```
+
+### Complete Service Class
+
+```python title="encryption_service.py"
+import os
+import requests
+from typing import Dict, Any
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class EncryptionService:
+    def __init__(self):
+        self.base_url = 'https://your-api-domain.com/api/v1/crypto'
+        self.project_id = os.getenv('PROJECT_ID')
+        self.api_key = os.getenv('API_KEY')
+        self.passphrase = os.getenv('PASSPHRASE')
+        
+        if not all([self.project_id, self.api_key, self.passphrase]):
+            raise ValueError('Missing required environment variables')
+        
+        self.headers = {
+            'x-api-key': self.api_key,
+            'Content-Type': 'application/json'
+        }
+    
+    def encrypt(self, data: str) -> str:
+        """Encrypt a string of data"""
+        try:
+            url = f'{self.base_url}/encrypt/{self.project_id}'
+            payload = {'data': data, 'passphrase': self.passphrase}
+            
+            response = requests.post(url, json=payload, headers=self.headers)
+            response.raise_for_status()
+            
+            return response.json()['data']['encrypted_output']
+        except Exception as e:
+            self._handle_error('Encryption', e)
+    
+    def decrypt(self, encrypted_data: str) -> str:
+        """Decrypt encrypted data"""
+        try:
+            url = f'{self.base_url}/decrypt/{self.project_id}'
+            payload = {'data': encrypted_data, 'passphrase': self.passphrase}
+            
+            response = requests.post(url, json=payload, headers=self.headers)
+            response.raise_for_status()
+            
+            return response.json()['data']['plaintext']
+        except Exception as e:
+            self._handle_error('Decryption', e)
+    
+    def deep_encrypt(self, data_object: Any) -> Dict[str, Any]:
+        """Deep encrypt a complex object"""
+        try:
+            url = f'{self.base_url}/deep_encrypt/{self.project_id}'
+            payload = {'data': data_object, 'passphrase': self.passphrase}
+            
+            response = requests.post(url, json=payload, headers=self.headers)
+            response.raise_for_status()
+            
+            return response.json()['data']
+        except Exception as e:
+            self._handle_error('Deep Encryption', e)
+    
+    def deep_decrypt(self, encrypted_object: Any) -> Dict[str, Any]:
+        """Deep decrypt an encrypted object"""
+        try:
+            url = f'{self.base_url}/deep_decrypt/{self.project_id}'
+            payload = {'encrypted': encrypted_object, 'passphrase': self.passphrase}
+            
+            response = requests.post(url, json=payload, headers=self.headers)
+            response.raise_for_status()
+            
+            return response.json()['data']
+        except Exception as e:
+            self._handle_error('Deep Decryption', e)
+    
+    def _handle_error(self, operation: str, error: Exception):
+        """Handle and log errors"""
+        error_info = {
+            'operation': operation,
+            'status': getattr(error, 'response', None) and error.response.status_code,
+            'message': str(error)
+        }
+        print(f'{operation} failed:', error_info)
+        raise
+```
+
+### Usage Example
+
+```python title="app.py"
+from encryption_service import EncryptionService
+
+def main():
+    service = EncryptionService()
+    
+    # Simple encryption/decryption
+    print('=== Simple Encryption/Decryption ===')
+    encrypted = service.encrypt('my-secret-password')
+    print(f'Encrypted: {encrypted}')
+    
+    decrypted = service.decrypt(encrypted)
+    print(f'Decrypted: {decrypted}')
+    
+    # Deep encryption/decryption
+    print('\n=== Deep Encryption/Decryption ===')
+    user_data = {
+        'user': {
+            'name': 'John Doe',
+            'email': 'john@example.com'
+        },
+        'payment': {
+            'cardNumber': '4111111111111111'
+        }
+    }
+    
+    result = service.deep_encrypt(user_data)
+    print(f'Encrypted: {result["encrypted"]}')
+    print(f'Metadata: {result["meta"]}')
+    
+    decrypted_result = service.deep_decrypt(result['encrypted'])
+    print(f'Decrypted: {decrypted_result["data"]}')
+
+if __name__ == '__main__':
+    main()
+```
+
+### Error Handling
+
+```python title="error_handling.py"
+def encrypt_with_error_handling(data):
+    url = f'{BASE_URL}/encrypt/{PROJECT_ID}'
+    
+    headers = {
+        'x-api-key': API_KEY,
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'data': data,
+        'passphrase': PASSPHRASE
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        
+        return response.json()['data']['encrypted_output']
+        
+    except requests.exceptions.HTTPError as e:
+        error_data = e.response.json() if e.response else {}
+        status_code = e.response.status_code if e.response else None
+        
+        print(f"HTTP Error {status_code}: {error_data.get('message', str(e))}")
+        
+        if status_code == 400:
+            print("Bad Request: Check your input data")
+        elif status_code == 401:
+            print("Unauthorized: Check your API key")
+        elif status_code == 403:
+            print("Forbidden: Check your project ID")
+        elif status_code == 500:
+            print("Server Error: Please try again later")
+            
+        raise
+        
+    except requests.exceptions.ConnectionError:
+        print("Connection Error: Check your network")
+        raise
+        
+    except requests.exceptions.Timeout:
+        print("Timeout: Server took too long to respond")
+        raise
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Request Error: {e}")
+        raise
+```

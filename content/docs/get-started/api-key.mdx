@@ -1,15 +1,11 @@
 ---
 title: Setting up API Key
-description: Generate and configure API keys to authenticate your applications
+description: Generate and configure API keys to authenticate your applications with Cipherion's encryption services.
 ---
 
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
-
-# Setting up API Key
-
-Generate and configure API keys to authenticate your applications with Cipherion's encryption services.
 
 <Callout title="Prerequisites">
 Ensure your project is created and you have the necessary permissions to generate API keys.
@@ -34,23 +30,37 @@ Access the API key management interface
 Set appropriate scopes and permissions for your API key
 
 #### Key Name and Description
-
-Give your API key a descriptive name to help identify its purpose.
+<div className="border rounded-lg p-2 dark:border-gray-700 bg-black-800 text-white-600">
+  <p className="-mt-2">Product API Key</p>
+</div>
+<div className="mt-2 border rounded-lg p-2 pb-10 dark:border-gray-700 bg-black-800 text-white-600">
+  <p className="-mt-2">Key used for production environment encryption operations</p>
+</div>
 
 #### Key Permissions
 
-- ✓ **Encrypt Data** (Required)
-- ✓ **Decrypt Data** (Required)
-- ☐ Tokenize Data
-- ☐ Access Audit Logs
+- **Encrypt Data** (Required)
+- **Decrypt Data** (Required)
+- Tokenize Data
+- Detokenize Data
+- Generate Reports
+- Access Audit Logs
 
 #### Environment
-
-Select the environment where this API key will be used.
+<div className="mt-2 border rounded-lg p-2 dark:border-gray-700 bg-black-800 text-white-600">
+  <p className="-mt-2">Select Environment</p>
+</div>
 
 #### Rate Limits
+Requests per minute
+<div className="mt-2 border rounded-lg p-2 pb-10 dark:border-gray-700 bg-black-800 text-white-600">
+  <p className="-mt-2">1000</p>
+</div>
 
-Configure request rate limits for this API key to prevent abuse.
+Daily request limit
+<div className="mt-2 border rounded-lg p-2 pb-10 dark:border-gray-700 bg-black-800 text-white-600">
+  <p className="-mt-2">100000</p>
+</div>
 </Step>
 
 <Step>
@@ -95,43 +105,14 @@ CIPHERION_API_ENDPOINT=https://api.cipherion.com
 </Step>
 </Steps>
 
-## Testing Your API Key
-
-Verify your API key is working correctly
-
-### Quick Test with cURL
-
-```bash
-curl -X POST https://api.cipherion.com/v1/encrypt \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": "test@example.com",
-    "data_type": "email"
-  }'
-```
-
-### Expected Response
-
-```json
-{
-  "success": true,
-  "encrypted_data": "cph_encrypted_...",
-  "data_type": "email",
-  "encryption_method": "field_level",
-  "request_id": "req_123456789"
-}
-```
-
 ## Troubleshooting
-
 Common issues and solutions
 
-### 401 Unauthorized Error
+#### 401 Unauthorized Error
 Check that your API key is correctly formatted and has the required permissions.
 
-### 429 Rate Limit Exceeded
+#### 429 Rate Limit Exceeded
 You've exceeded your rate limits. Consider implementing exponential backoff or contact support to increase limits.
 
-### 403 Forbidden
+#### 403 Forbidden
 Your API key doesn't have permission for this operation. Review and update key permissions.

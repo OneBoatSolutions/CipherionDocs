@@ -1,14 +1,10 @@
 ---
 title: Changing Passphrase
-description: Securely update your master passphrase and migrate existing encrypted data
+description: Securely update your master passphrase and migrate existing encrypted data to use the new passphrase.
 ---
 
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Callout } from 'fumadocs-ui/components/callout';
-
-# Changing Passphrase
-
-Learn how to securely update your master passphrase and migrate existing encrypted data to use the new passphrase.
 
 <Callout type="warning" title="Important">
 Changing your passphrase will trigger a secure data migration process. This operation cannot be undone, so please ensure you have backups and follow the process carefully.
@@ -37,111 +33,18 @@ Best practices for passphrase rotation
 <Steps>
 <Step>
 ### Prepare for Passphrase Change (Coming Soon...)
-
 Pre-change verification and preparation
 
 #### Pre-Change Checklist
-
-- ✓ Backup all critical encrypted data
-- ✓ Verify current passphrase works correctly
-- ✓ Schedule maintenance window for migration
-- ✓ Notify team members of planned change
-- ✓ Prepare new strong passphrase
+- Backup all critical encrypted data
+- Verify current passphrase works correctly
+- Schedule maintenance window for migration
+- Notify team members of planned change
+- Prepare new strong passphrase
 
 <Callout type="info">
 The migration process is designed to be zero-downtime, but we recommend scheduling during low-traffic periods for optimal performance.
 </Callout>
-</Step>
-
-<Step>
-### Verify Current Passphrase (Coming Soon...)
-
-Confirm access before making changes
-
-Enter your current passphrase to verify access:
-
-```
-[Current Passphrase Input Field]
-```
-
-This step ensures you have the correct credentials before proceeding with the change.
-</Step>
-
-<Step>
-### Enter New Passphrase (Coming Soon...)
-
-Create your new master passphrase
-
-#### New Passphrase Requirements
-
-- Minimum 12 characters
-- Must be different from current passphrase
-- Include uppercase, lowercase, numbers, and symbols
-- Cannot reuse previous passphrases
-
-```
-[New Passphrase Input Field]
-[Confirm New Passphrase Input Field]
-```
-
-**Passphrase Strength Indicator:** Strong ✓
-</Step>
-
-<Step>
-### Review Migration Plan (Coming Soon...)
-
-Understand what will happen during migration
-
-#### Migration Details
-
-**Data to be migrated:**
-- Encrypted records: 15,420
-- Estimated time: 5-10 minutes
-- Backup created: Yes
-- Rollback available: Yes
-
-**Migration Process:**
-1. System creates encrypted backup
-2. New keys derived from new passphrase
-3. Data re-encrypted with new keys
-4. Verification performed
-5. Old backup retained for 30 days
-</Step>
-
-<Step>
-### Execute Migration (Coming Soon...)
-
-Start the passphrase change process
-
-Click the button below to begin the migration. You'll receive real-time updates on progress.
-
-**Migration Progress:**
-```
-[Progress Bar: 0%]
-Status: Ready to begin
-```
-
-<Callout type="warning">
-Do not close this window during migration. The process will continue in the background if interrupted.
-</Callout>
-</Step>
-
-<Step>
-### Verify & Complete (Coming Soon...)
-
-Confirm successful migration
-
-#### Verification Steps
-
-- ✓ All data successfully re-encrypted
-- ✓ Integrity checks passed
-- ✓ Old passphrase invalidated
-- ✓ New passphrase active
-- ✓ Backup retained
-
-**Migration Complete!**
-
-Your passphrase has been successfully changed. All encrypted data has been migrated to use the new passphrase.
 </Step>
 </Steps>
 
@@ -166,22 +69,18 @@ Guidelines for maintaining secure passphrases
 - Have emergency recovery procedures
 
 ## Emergency Passphrase Recovery
-
 What to do if you lose access to your passphrase
-
 <Callout type="error" title="Lost Passphrase">
 If you've lost your passphrase, data recovery may not be possible due to our zero-knowledge architecture.
 </Callout>
 
 ### Recovery Options
-
 1. Check secure password manager or backup locations
 2. Contact team members who may have access
 3. Restore from encrypted backup with known passphrase
 4. As last resort, start fresh with new passphrase (data loss)
 
 ### Prevention Measures
-
 - Maintain secure backups of passphrases
 - Use enterprise password management solutions
 - Implement key escrow for critical systems
@@ -198,6 +97,3 @@ Large datasets may take longer to migrate. The process is designed to be resumab
 
 ### Data Integrity Errors
 If verification fails, the migration will be rolled back automatically. Check your passphrases and retry.
-
-### Cannot Access After Change
-Ensure you're using the new passphrase. Check for typos or caps lock. Contact support if problems persist.

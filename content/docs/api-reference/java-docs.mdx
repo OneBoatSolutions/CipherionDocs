@@ -1,0 +1,352 @@
+---
+title: Java Code Examples
+description: Complete guide to integrating the Encryption API with Java applications
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+### Setup
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20230227</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.cdimascio</groupId>
+        <artifactId>dotenv-java</artifactId>
+        <version>3.0.0</version>
+    </dependency>
+</dependencies>
+```
+
+### Environment Configuration
+
+```bash
+PROJECT_ID=your_project_id
+API_KEY=your_api_key
+PASSPHRASE=your_passphrase
+```
+
+<Callout type="warn">
+Never commit your `.env` file to version control. Add it to `.gitignore`.
+</Callout>
+
+### Simple Encryption
+
+```java
+import java.net.http.*;
+import java.net.URI;
+import org.json.JSONObject;
+
+public static String encrypt(String data) throws Exception {
+    JSONObject payload = new JSONObject()
+        .put("data", data)
+        .put("passphrase", EncryptionConfig.PASSPHRASE);
+    
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(EncryptionConfig.BASE_URL + "/encrypt/" + EncryptionConfig.PROJECT_ID))
+        .header("x-api-key", EncryptionConfig.API_KEY)
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+        .build();
+    
+    HttpResponse<String> response = EncryptionConfig.client.send(
+        request, HttpResponse.BodyHandlers.ofString()
+    );
+    
+    if (response.statusCode() == 200) {
+        return new JSONObject(response.body())
+            .getJSONObject("data")
+            .getString("encrypted_output");
+    }
+    throw new Exception("Encryption failed: " + response.body());
+}
+```
+
+### Simple Decryption
+
+```java
+public static String decrypt(String encryptedData) throws Exception {
+    JSONObject payload = new JSONObject()
+        .put("data", encryptedData)
+        .put("passphrase", EncryptionConfig.PASSPHRASE);
+    
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(EncryptionConfig.BASE_URL + "/decrypt/" + EncryptionConfig.PROJECT_ID))
+        .header("x-api-key", EncryptionConfig.API_KEY)
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+        .build();
+    
+    HttpResponse<String> response = EncryptionConfig.client.send(
+        request, HttpResponse.BodyHandlers.ofString()
+    );
+    
+    if (response.statusCode() == 200) {
+        return new JSONObject(response.body())
+            .getJSONObject("data")
+            .getString("plaintext");
+    }
+    throw new Exception("Decryption failed: " + response.body());
+}
+```
+
+### Deep Encryption
+
+```java
+public static JSONObject deepEncrypt(JSONObject data) throws Exception {
+    JSONObject payload = new JSONObject()
+        .put("data", data)
+        .put("passphrase", EncryptionConfig.PASSPHRASE);
+    
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(EncryptionConfig.BASE_URL + "/deep_encrypt/" + EncryptionConfig.PROJECT_ID))
+        .header("x-api-key", EncryptionConfig.API_KEY)
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+        .build();
+    
+    HttpResponse<String> response = EncryptionConfig.client.send(
+        request, HttpResponse.BodyHandlers.ofString()
+    );
+    
+    if (response.statusCode() == 200) {
+        return new JSONObject(response.body()).getJSONObject("data");
+    }
+    throw new Exception("Deep encryption failed: " + response.body());
+}
+```
+
+### Usage Example
+
+```java
+JSONObject userData = new JSONObject()
+    .put("user", new JSONObject()
+        .put("name", "John Doe")
+        .put("email", "john@example.com")
+        .put("ssn", "123-45-6789"))
+    .put("payment", new JSONObject()
+        .put("cardNumber", "4111111111111111")
+        .put("cvv", "123"));
+
+JSONObject result = deepEncrypt(userData);
+System.out.println("Encrypted: " + result.getJSONObject("encrypted"));
+```
+
+### Deep Decryption
+
+```java
+public static JSONObject deepDecrypt(JSONObject encryptedData) throws Exception {
+    JSONObject payload = new JSONObject()
+        .put("encrypted", encryptedData)
+        .put("passphrase", EncryptionConfig.PASSPHRASE);
+    
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(EncryptionConfig.BASE_URL + "/deep_decrypt/" + EncryptionConfig.PROJECT_ID))
+        .header("x-api-key", EncryptionConfig.API_KEY)
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+        .build();
+    
+    HttpResponse<String> response = EncryptionConfig.client.send(
+        request, HttpResponse.BodyHandlers.ofString()
+    );
+    
+    if (response.statusCode() == 200) {
+        return new JSONObject(response.body()).getJSONObject("data");
+    }
+    throw new Exception("Deep decryption failed: " + response.body());
+}
+```
+
+### Complete Service Class
+
+<Tabs items={['EncryptionService.java', 'Usage']}>
+<Tab value="EncryptionService.java">
+
+```java
+import java.net.http.*;
+import java.net.URI;
+import org.json.JSONObject;
+import io.github.cdimascio.dotenv.Dotenv;
+
+public class EncryptionService {
+    private final String baseUrl;
+    private final String projectId;
+    private final String apiKey;
+    private final String passphrase;
+    private final HttpClient client;
+    
+    public EncryptionService() {
+        Dotenv dotenv = Dotenv.load();
+        this.baseUrl = "https://your-api-domain.com/api/v1/crypto";
+        this.projectId = dotenv.get("PROJECT_ID");
+        this.apiKey = dotenv.get("API_KEY");
+        this.passphrase = dotenv.get("PASSPHRASE");
+        this.client = HttpClient.newHttpClient();
+        
+        if (projectId == null || apiKey == null || passphrase == null) {
+            throw new IllegalStateException("Missing required environment variables");
+        }
+    }
+    
+    public String encrypt(String data) throws Exception {
+        JSONObject payload = new JSONObject()
+            .put("data", data)
+            .put("passphrase", passphrase);
+        
+        HttpRequest request = buildRequest("/encrypt/" + projectId, payload);
+        HttpResponse<String> response = client.send(
+            request, HttpResponse.BodyHandlers.ofString()
+        );
+        
+        return handleResponse(response, "encrypted_output");
+    }
+    
+    public String decrypt(String encryptedData) throws Exception {
+        JSONObject payload = new JSONObject()
+            .put("data", encryptedData)
+            .put("passphrase", passphrase);
+        
+        HttpRequest request = buildRequest("/decrypt/" + projectId, payload);
+        HttpResponse<String> response = client.send(
+            request, HttpResponse.BodyHandlers.ofString()
+        );
+        
+        return handleResponse(response, "plaintext");
+    }
+    
+    public JSONObject deepEncrypt(JSONObject data) throws Exception {
+        JSONObject payload = new JSONObject()
+            .put("data", data)
+            .put("passphrase", passphrase);
+        
+        HttpRequest request = buildRequest("/deep_encrypt/" + projectId, payload);
+        HttpResponse<String> response = client.send(
+            request, HttpResponse.BodyHandlers.ofString()
+        );
+        
+        if (response.statusCode() == 200) {
+            return new JSONObject(response.body()).getJSONObject("data");
+        }
+        throw new Exception("Deep encryption failed: " + response.body());
+    }
+    
+    public JSONObject deepDecrypt(JSONObject encryptedData) throws Exception {
+        JSONObject payload = new JSONObject()
+            .put("encrypted", encryptedData)
+            .put("passphrase", passphrase);
+        
+        HttpRequest request = buildRequest("/deep_decrypt/" + projectId, payload);
+        HttpResponse<String> response = client.send(
+            request, HttpResponse.BodyHandlers.ofString()
+        );
+        
+        if (response.statusCode() == 200) {
+            return new JSONObject(response.body()).getJSONObject("data");
+        }
+        throw new Exception("Deep decryption failed: " + response.body());
+    }
+    
+    private HttpRequest buildRequest(String endpoint, JSONObject payload) {
+        return HttpRequest.newBuilder()
+            .uri(URI.create(baseUrl + endpoint))
+            .header("x-api-key", apiKey)
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+            .build();
+    }
+    
+    private String handleResponse(HttpResponse<String> response, String field) 
+            throws Exception {
+        if (response.statusCode() == 200) {
+            return new JSONObject(response.body())
+                .getJSONObject("data")
+                .getString(field);
+        }
+        throw new Exception("Request failed: " + response.body());
+    }
+}
+```
+
+</Tab>
+<Tab value="Usage">
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        try {
+            EncryptionService service = new EncryptionService();
+            
+            // Simple encryption
+            String encrypted = service.encrypt("my-secret-password");
+            System.out.println("Encrypted: " + encrypted);
+            
+            // Simple decryption
+            String decrypted = service.decrypt(encrypted);
+            System.out.println("Decrypted: " + decrypted);
+            
+            // Deep encryption
+            JSONObject userData = new JSONObject()
+                .put("user", new JSONObject()
+                    .put("name", "John Doe")
+                    .put("email", "john@example.com"));
+            
+            JSONObject result = service.deepEncrypt(userData);
+            System.out.println("Encrypted: " + result.getJSONObject("encrypted"));
+            
+            // Deep decryption
+            JSONObject decryptedResult = service.deepDecrypt(
+                result.getJSONObject("encrypted")
+            );
+            System.out.println("Decrypted: " + decryptedResult.get("data"));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+</Tab>
+</Tabs>
+
+### Error Handling
+
+```java
+public static String encryptWithErrorHandling(String data) {
+    try {
+        // ... request setup ...
+        
+        HttpResponse<String> response = client.send(
+            request, HttpResponse.BodyHandlers.ofString()
+        );
+        
+        int statusCode = response.statusCode();
+        
+        if (statusCode == 200) {
+            return new JSONObject(response.body())
+                .getJSONObject("data")
+                .getString("encrypted_output");
+        }
+        
+        JSONObject errorResponse = new JSONObject(response.body());
+        String errorMessage = errorResponse.optString("message", "Unknown error");
+        
+        switch (statusCode) {
+            case 400: throw new IllegalArgumentException("Bad Request: " + errorMessage);
+            case 401: throw new SecurityException("Unauthorized: Check your API key");
+            case 403: throw new SecurityException("Forbidden: Check your project ID");
+            case 500: throw new RuntimeException("Server Error: " + errorMessage);
+            default: throw new RuntimeException("Error " + statusCode + ": " + errorMessage);
+        }
+    } catch (Exception e) {
+        System.err.println("Exception: " + e.getMessage());
+        throw new RuntimeException(e);
+    }
+}
+```
