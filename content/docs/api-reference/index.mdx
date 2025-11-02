@@ -6,10 +6,7 @@ description: Secure data encryption and decryption services with field-level and
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Step, Steps } from 'fumadocs-ui/components/steps';
-
-# API Key Reference
-
-Secure data encryption and decryption services with field-level and deep object encryption support.
+import { Shield, Lock, Eye, Key, Code, FileText, BookOpen, Package, Heart, CreditCard, Check, Rocket, Zap } from 'lucide-react';
 
 <Callout type="warn" title="Security Best Practices">
 **IMPORTANT SECURITY GUIDELINES:**
@@ -501,7 +498,12 @@ await decrypt(encrypted, PASSPHRASE);
 
     module.exports = EncryptionService;
     ```
+
+    <div className="mt-4">
+      <a href="/api-reference/js-docs" className="inline-block px-4 py-2 " > Read More → </a>
+    </div>
   </Tab>
+  
   
   <Tab value="Python">
     ### Python
@@ -572,6 +574,10 @@ await decrypt(encrypted, PASSPHRASE);
             
             return response.json()
     ```
+
+    <div className="mt-4">
+      <a href="/api-reference/python-docs" className="inline-block px-4 py-2 " > Read More → </a>
+    </div>
   </Tab>
   
   <Tab value="Java">
@@ -636,6 +642,10 @@ await decrypt(encrypted, PASSPHRASE);
         }
     }
     ```
+
+    <div className="mt-4">
+      <a href="/api-reference/java-docs" className="inline-block px-4 py-2 " > Read More → </a>
+    </div>
   </Tab>
   
   <Tab value="Go">
@@ -701,6 +711,10 @@ await decrypt(encrypted, PASSPHRASE);
         return result["data"].(map[string]interface{})["encrypted_output"].(string), nil
     }
     ```
+
+    <div className="mt-4">
+      <a href="/api-reference/go-docs" className="inline-block px-4 py-2 " > Read More → </a>
+    </div>
   </Tab>
 </Tabs>
 
@@ -741,5 +755,5 @@ A: The API accepts payloads up to 15MB. Consider chunking larger data or using c
 
 For technical support, feature requests, or bug reports, contact us at:
 
-- **Email:** support@cipherion.cloud
-- **Documentation:** https://docs.cipherion.cloud
+- **Email:** official@cipherion.in
+- **Documentation:** https://docs.cipherion.in
