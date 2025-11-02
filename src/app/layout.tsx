@@ -2,6 +2,15 @@
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import { Inter } from 'next/font/google';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Cipherion Docs",
+  description: "Documentation for Cipherion",
+  icons:{
+    icon:'/favicon.ico'
+  }
+};
 
 const inter = Inter({
   subsets: ['latin'],
