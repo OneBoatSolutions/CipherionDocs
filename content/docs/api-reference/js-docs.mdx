@@ -1,0 +1,341 @@
+---
+title: JS / Node.js Code Examples
+description: Complete guide to integrating the Encryption API with JavaScript/Node.js applications
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+### Setup
+
+```bash
+npm install axios dotenv
+```
+
+### Environment Configuration
+
+```bash title=".env"
+PROJECT_ID=your_project_id
+API_KEY=your_api_key
+PASSPHRASE=your_passphrase
+```
+
+<Callout type="warn">
+Never commit your `.env` file to version control. Add it to your `.gitignore` file.
+</Callout>
+
+### Simple Encryption
+
+```javascript title="encrypt.js"
+const axios = require('axios');
+require('dotenv').config();
+
+const BASE_URL = 'https://your-api-domain.com/api/v1/crypto';
+const PROJECT_ID = process.env.PROJECT_ID;
+const API_KEY = process.env.API_KEY;
+const PASSPHRASE = process.env.PASSPHRASE;
+
+async function encryptData(data) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/encrypt/${PROJECT_ID}`,
+      {
+        data: data,
+        passphrase: PASSPHRASE
+      },
+      {
+        headers: {
+          'x-api-key': API_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    console.log('Encrypted:', response.data.data.encrypted_output);
+    return response.data.data.encrypted_output;
+  } catch (error) {
+    console.error('Encryption failed:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Usage
+encryptData('sensitive information to encrypt')
+  .then(encrypted => console.log('Success:', encrypted))
+  .catch(err => console.error('Error:', err));
+```
+
+### Simple Decryption
+
+```javascript title="decrypt.js"
+async function decryptData(encryptedData) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/decrypt/${PROJECT_ID}`,
+      {
+        data: encryptedData,
+        passphrase: PASSPHRASE
+      },
+      {
+        headers: {
+          'x-api-key': API_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    console.log('Decrypted:', response.data.data.plaintext);
+    return response.data.data.plaintext;
+  } catch (error) {
+    console.error('Decryption failed:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Usage
+decryptData('U2FsdGVkX1+jKX9Z3mHq7vK8pQ2...')
+  .then(plaintext => console.log('Success:', plaintext))
+  .catch(err => console.error('Error:', err));
+```
+
+### Deep Encryption
+
+```javascript title="deep-encrypt.js"
+async function deepEncrypt(dataObject) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/deep_encrypt/${PROJECT_ID}`,
+      {
+        data: dataObject,
+        passphrase: PASSPHRASE
+      },
+      {
+        headers: {
+          'x-api-key': API_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    console.log('Encrypted object:', response.data.data.encrypted);
+    console.log('Metadata:', response.data.data.meta);
+    return response.data.data;
+  } catch (error) {
+    console.error('Deep encryption failed:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Usage
+const userData = {
+  user: {
+    name: 'John Doe',
+    email: 'john@example.com',
+    ssn: '123-45-6789'
+  },
+  payment: {
+    cardNumber: '4111111111111111',
+    cvv: '123'
+  }
+};
+
+deepEncrypt(userData)
+  .then(result => console.log('Success:', result))
+  .catch(err => console.error('Error:', err));
+```
+
+### Deep Decryption
+
+```javascript title="deep-decrypt.js"
+async function deepDecrypt(encryptedObject) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/deep_decrypt/${PROJECT_ID}`,
+      {
+        encrypted: encryptedObject,
+        passphrase: PASSPHRASE
+      },
+      {
+        headers: {
+          'x-api-key': API_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    console.log('Decrypted object:', response.data.data.data);
+    console.log('Metadata:', response.data.data.meta);
+    return response.data.data;
+  } catch (error) {
+    console.error('Deep decryption failed:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Usage
+const encryptedData = {
+  user: {
+    name: 'U2FsdGVkX1+abc123...',
+    email: 'U2FsdGVkX1+def456...',
+    ssn: 'U2FsdGVkX1+ghi789...'
+  },
+  payment: {
+    cardNumber: 'U2FsdGVkX1+jkl012...',
+    cvv: 'U2FsdGVkX1+mno345...'
+  }
+};
+
+deepDecrypt(encryptedData)
+  .then(result => console.log('Success:', result))
+  .catch(err => console.error('Error:', err));
+```
+
+### Complete Service Class
+
+```javascript title="encryption-service.js"
+const axios = require('axios');
+require('dotenv').config();
+
+class EncryptionService {
+  constructor() {
+    this.baseURL = 'https://your-api-domain.com/api/v1/crypto';
+    this.projectId = process.env.PROJECT_ID;
+    this.apiKey = process.env.API_KEY;
+    this.passphrase = process.env.PASSPHRASE;
+    
+    if (!this.projectId || !this.apiKey || !this.passphrase) {
+      throw new Error('Missing required environment variables');
+    }
+  }
+  
+  async encrypt(data) {
+    try {
+      const response = await axios.post(
+        `${this.baseURL}/encrypt/${this.projectId}`,
+        { data, passphrase: this.passphrase },
+        { headers: { 'x-api-key': this.apiKey } }
+      );
+      return response.data.data.encrypted_output;
+    } catch (error) {
+      this.handleError('Encryption', error);
+    }
+  }
+  
+  async decrypt(encryptedData) {
+    try {
+      const response = await axios.post(
+        `${this.baseURL}/decrypt/${this.projectId}`,
+        { data: encryptedData, passphrase: this.passphrase },
+        { headers: { 'x-api-key': this.apiKey } }
+      );
+      return response.data.data.plaintext;
+    } catch (error) {
+      this.handleError('Decryption', error);
+    }
+  }
+  
+  async deepEncrypt(dataObject) {
+    try {
+      const response = await axios.post(
+        `${this.baseURL}/deep_encrypt/${this.projectId}`,
+        { data: dataObject, passphrase: this.passphrase },
+        { headers: { 'x-api-key': this.apiKey } }
+      );
+      return response.data.data;
+    } catch (error) {
+      this.handleError('Deep Encryption', error);
+    }
+  }
+  
+  async deepDecrypt(encryptedObject) {
+    try {
+      const response = await axios.post(
+        `${this.baseURL}/deep_decrypt/${this.projectId}`,
+        { encrypted: encryptedObject, passphrase: this.passphrase },
+        { headers: { 'x-api-key': this.apiKey } }
+      );
+      return response.data.data;
+    } catch (error) {
+      this.handleError('Deep Decryption', error);
+    }
+  }
+  
+  handleError(operation, error) {
+    console.error(`${operation} failed:`, {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+}
+
+module.exports = EncryptionService;
+```
+
+### Usage Example
+
+```javascript title="app.js"
+const EncryptionService = require('./encryption-service');
+
+async function main() {
+  const service = new EncryptionService();
+  
+  // Simple encryption/decryption
+  const encrypted = await service.encrypt('my-secret-password');
+  const decrypted = await service.decrypt(encrypted);
+  console.log('Match:', encrypted !== decrypted);
+  
+  // Deep encryption/decryption
+  const userData = {
+    user: { name: 'John', email: 'john@example.com' },
+    payment: { card: '4111111111111111' }
+  };
+  
+  const { encrypted: encryptedObj } = await service.deepEncrypt(userData);
+  const { data: decryptedObj } = await service.deepDecrypt(encryptedObj);
+  console.log('Decrypted:', decryptedObj);
+}
+
+main().catch(console.error);
+```
+
+### Error Handling
+
+```javascript title="error-handling.js"
+async function encryptWithErrorHandling(data) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/encrypt/${PROJECT_ID}`,
+      { data, passphrase: PASSPHRASE },
+      { headers: { 'x-api-key': API_KEY } }
+    );
+    return response.data.data.encrypted_output;
+  } catch (error) {
+    if (error.response) {
+      const { status, data } = error.response;
+      
+      switch (status) {
+        case 400:
+          console.error('Bad Request:', data.message);
+          break;
+        case 401:
+          console.error('Unauthorized: Check your API key');
+          break;
+        case 403:
+          console.error('Forbidden: Check your project ID');
+          break;
+        case 500:
+          console.error('Server Error:', data.message);
+          break;
+        default:
+          console.error('Unknown Error:', data.message);
+      }
+    } else if (error.request) {
+      console.error('No response from server');
+    } else {
+      console.error('Request setup error:', error.message);
+    }
+    throw error;
+  }
+}
+```

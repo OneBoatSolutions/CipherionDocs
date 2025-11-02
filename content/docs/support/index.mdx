@@ -1,30 +1,231 @@
 ---
 title: Support
-description: Get help with Cipherion and access support resources
-icon: LifeBuoy
+description: Get help with Cipherion implementation, troubleshooting, and best practices. Our support team is here to ensure your success.
 ---
 
-# Support
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Shield, Lock, Eye, Key, Code, FileText, BookOpen, Package, Heart, CreditCard, Check, Rocket, Chart, Zap, Book, Video, Activity, Compass, ScrollText } from 'lucide-react';
 
-Get help with Cipherion and access support resources.
+## Support Channels
 
-## Contact Support
+We offer multiple support channels to meet your needs, from community resources to dedicated enterprise support.
 
-Our support team is available 24/7 to assist you with any questions or issues.
+### Enterprise Support (24/7)
 
-- **Email:** support@cipherion.com
-- **Response Time:** Within 24 hours
-- **Emergency Support:** Available for enterprise customers
+**Dedicated support for enterprise customers**
 
-## Support Resources
+✅ Dedicated account manager  
+✅ Phone and video support  
+✅ Less than 1 hour response time  
+✅ Priority escalation
 
-- Documentation
-- Community Forum (Coming Soon)
-- Knowledge Base (Coming Soon)
-- Status Page (Coming Soon)
+[Contact Enterprise Support →](mailto:support@cipherion.in)
 
-## Report an Issue
+---
 
-If you've encountered a bug or security issue, please contact us immediately.
+### Email Support (Business Hours)
 
-[Report Security Issue](#)
+**Technical support via email**
+
+✅ Technical questions
+✅ Integration assistance
+✅ Less than 4 hour response time
+✅ Detailed troubleshooting
+
+**Email:** support@cipherion.in
+
+---
+
+### Community Support (Free)
+
+**Community-driven support and discussions**
+
+✅ Community discussions  
+✅ Best practices sharing  
+✅ Code examples  
+✅ Peer-to-peer help
+
+- [Discord Community](https://discord.gg/cipherion)
+- [GitHub Discussions](https://github.com/cipherion/discussions)
+
+## Support Hours
+
+### Enterprise Support (24/7)
+
+Round-the-clock support for critical issues
+
+- 🌍 Global coverage
+- 📞 Emergency hotline
+- ⚡ Less than 1 hour response
+
+### Business Hours Support
+
+Standard support during business hours:
+
+- 🇪🇺 **Europe:** Mon-Fri 9 AM - 5 PM CET
+- 🇺🇸 **Americas:** Mon-Fri 9 AM - 5 PM EST
+- 🇮🇳 **India:** Mon-Fri 9 AM - 5 PM IST
+- 📧 Less than 4 hour response
+
+### Community Support
+
+Community-driven support available anytime
+
+- 💬 Active community
+- 📚 Self-service resources
+- 🤝 Peer assistance
+
+## Common Issues & Solutions
+
+Quick solutions to frequently encountered problems.
+
+### Authentication Errors (401)
+
+Issues with API key authentication
+
+- Verify API key format: `cph_live_sk_...`
+- Check environment variables are set correctly
+- Ensure API key has necessary permissions
+- Verify project ID matches your account
+
+---
+
+### Rate Limiting (429)
+
+Exceeding API rate limits
+
+- Implement exponential backoff
+- Review rate limit headers in responses
+- Consider upgrading your plan
+- Optimize batching of requests
+
+---
+
+### Encryption/Decryption Failures
+
+Issues with data encryption or decryption
+
+- Verify passphrase consistency
+- Check context parameter matches
+- Ensure data type is supported
+- Validate input data format
+
+---
+
+### Connection Timeouts
+
+Network connectivity issues
+
+- Check firewall and proxy settings
+- Verify SSL/TLS certificate handling
+- Increase timeout values in SDK
+- Test connection with curl or similar
+
+## Self-Service Resources
+
+Comprehensive resources for independent problem-solving.
+
+<Cards>
+  <Card title="Knowledge Base" icon={<Book/>}>
+    Searchable articles and guides
+    
+    - Setup and configuration guides
+    - Troubleshooting articles
+    - Best practices
+    - Security recommendations
+  </Card>
+  
+  <Card title="Video Tutorials" icon={<Video/>}>
+    Step-by-step video walkthroughs
+    
+    - Getting started tutorials
+    - Integration examples
+    - Advanced use cases
+    - Webinar recordings
+  </Card>
+  
+  <Card title="Code Examples" icon={<Code />}>
+    Ready-to-use code snippets
+    
+    - SDK integration examples
+    - Framework-specific code
+    - Error handling patterns
+    - Performance optimizations
+  </Card>
+  
+  <Card title="Status Page" icon={<Activity />}>
+    Real-time service status and incidents
+    
+    - API availability status
+    - Scheduled maintenance
+    - Incident reports
+    - Performance metrics
+  </Card>
+  
+  <Card title="API Explorer" icon={<Compass />}>
+    Interactive API testing tool
+    
+    - Test API endpoints
+    - Generate code samples
+    - Validate requests
+    - Debug responses
+  </Card>
+  
+  <Card title="Release Notes" icon={<ScrollText />}>
+    Latest updates and changes
+    
+    - New features
+    - Bug fixes
+    - Breaking changes
+    - Migration guides
+  </Card>
+</Cards>
+
+## Emergency Support
+
+<Callout type="warn" title="Emergency Support">
+For critical security incidents or service outages affecting production systems, enterprise customers can use our emergency hotline at **+91 8105188413** or email **support@cipherion.in** for immediate assistance.
+</Callout>
+
+## Contact Information
+
+Multiple ways to reach our support team:
+
+### General Support
+
+- 📧 **Email:** support@cipherion.in
+- 💬 **Live Chat:** Available during business hours
+- 📞 **Phone:** +91 8105188413
+
+### Sales & Enterprise
+
+- 📧 **Email:** support@cipherion.in
+- 📞 **Phone:** +91 8105188413
+- 📅 Schedule Demo
+
+### Partnership
+
+- 📧 **Email:** support@cipherion.in
+- 🤝 Partner Portal
+- 💼 **Integration Partnerships:** Contact our partnerships team
+
+## Best Practices for Getting Help
+
+When reaching out to support, please include:
+
+1. **Clear Description:** Describe the issue in detail
+2. **Error Messages:** Include complete error messages and stack traces
+3. **Environment Details:** SDK version, programming language, framework
+4. **Steps to Reproduce:** Exact steps to reproduce the issue
+5. **Expected vs Actual:** What you expected to happen vs what actually happened
+6. **Code Samples:** Relevant code snippets (remove sensitive data)
+
+<Callout type="info">
+**Pro Tip:** Search our knowledge base and community forums first - many common questions are already answered there!
+</Callout>
+
+
+
+---

@@ -6,11 +6,7 @@ description: Generate secure encryption keys using passphrases with zero-key-sto
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Callout } from 'fumadocs-ui/components/callout';
 
-# Key Generation by Passphrase
-
-Learn how to generate secure encryption keys using passphrases with Cipherion's zero-key-storage architecture.
-
-## Zero-Key-Storage Architecture
+## Zero-Key Architecture
 
 Understanding how Cipherion generates keys without storing them
 
@@ -35,9 +31,7 @@ Cipherion's revolutionary approach eliminates the need to store encryption keys.
 <Steps>
 <Step>
 ### Create a Strong Passphrase
-
 Generate a secure passphrase for key derivation
-
 <Callout type="info" title="Passphrase Strength">
 Consider making your passphrase longer and including a mix of uppercase, lowercase, numbers, and special characters.
 </Callout>
@@ -100,8 +94,6 @@ How to use passphrase-based key generation in your application
 
 ```bash
 POST /v1/encrypt
-Content-Type: application/json
-
 {
   "data": "john.doe@example.com",
   "data_type": "email"
@@ -113,9 +105,7 @@ Content-Type: application/json
 ```json
 {
   "success": true,
-  "encrypted_data": "cph_encrypted_data_here",
-  "data_type": "email",
-  "request_id": "req_abc123"
+  "encrypted_data": "cph_encrypted_data_here"
 }
 ```
 </Step>
@@ -142,7 +132,7 @@ Important security practices for passphrase management
 - Don't share passphrases between team members
 - Never log passphrases in application logs
 
-## Advanced Key Generation Features
+## Advanced Key Generation Features (Coming Soon...)
 
 Additional options for enterprise security
 
