@@ -1,36 +1,93 @@
 ---
-title: SDK Integrations
-description: Official SDKs and integration guides for popular programming languages
-icon: Package
+title: Introdution
+description: Integrate Cipherion into your applications using our comprehensive SDKs for all major programming languages and frameworks.
 ---
 
-# SDK Integrations
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Shield, Lock, Eye, Key, Code, FileText, BookOpen, Package, Heart, CreditCard, Check } from 'lucide-react';
 
-Official SDKs and integration guides for integrating Cipherion into your applications.
+## SDK Features
 
-## Coming Soon
+All Cipherion SDKs provide consistent functionality across languages:
 
-SDK documentation and integration guides are currently under development. This section will include:
+<Cards>
+  <Card title="Type-safe APIs" icon={<Check />} />
+  <Card title="Async operations" icon={<Check />} />
+  <Card title="Error handling" icon={<Check />} />
+  <Card title="Rate limiting" icon={<Check />} />
+  <Card title="Retry logic" icon={<Check />} />
+  <Card title="Logging support" icon={<Check />} />
+  <Card title="Configuration" icon={<Check />} />
+  <Card title="Testing utilities" icon={<Check />} />
+</Cards>
 
-- Official SDKs for popular languages
-- Integration examples
-- Best practices
-- Framework-specific guides
-- Sample applications
+## Available SDKs
 
-## Supported Languages (Coming Soon)
+### JavaScript / Node.js
 
-- JavaScript/TypeScript
-- Python
-- Java
-- Go
-- Ruby
-- PHP
-- .NET/C#
+<Callout type="info">
+**Status:** Stable | **Version:** v1.0.0
+</Callout>
 
-## Need Integration Help?
+Full-featured SDK for Node.js and browser environments
 
-Contact our developer support team for integration assistance.
+**Key Features:**
+- TypeScript support
+- Promise-based API
+- Automatic retries
+- Built-in rate limiting
 
-[Contact Developer Support](#)
+**Installation:**
 
+```bash
+npm i @cipherion/client
+# or
+yarn add @cipherion/client
+```
+
+[Read Documentation](/sdk-integrations/javascript) | [View Examples](/sdk-integrations/javascript#integration-examples)
+
+---
+
+### Python
+
+<Callout type="warning">
+**Status:** Coming Soon | **Version:** v2.0.3
+</Callout>
+
+Comprehensive Python SDK with async support
+
+**Key Features:**
+- Async/await support
+- Type hints
+- Context managers
+- Error handling
+
+---
+
+### Java
+
+<Callout type="warning">
+**Status:** Coming Soon | **Version:** v1.8.2
+</Callout>
+
+Enterprise-ready Java SDK with Spring Boot integration
+
+**Key Features:**
+- Spring Boot starter
+- Connection pooling
+- Metrics collection
+- Auto-configuration
+
+---
+
+## Support and Resources
+
+Need help integrating Cipherion SDKs? Check out these resources:
+
+- **Documentation:** Comprehensive guides and API references
+- **Examples:** Sample applications and code snippets
+- **GitHub:** Source code, issues, and community contributions
+- **Support:** Email us at official@cipherion.in

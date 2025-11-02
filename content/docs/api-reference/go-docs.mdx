@@ -1,0 +1,737 @@
+---
+title: Go Code Examples
+description: Complete code examples for integrating Cipherion encryption API with Go applications
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+
+### Setup
+
+```bash
+go get github.com/joho/godotenv
+```
+
+### Environment Configuration
+
+```bash title=".env"
+PROJECT_ID=your_project_id
+API_KEY=your_api_key
+PASSPHRASE=your_passphrase
+```
+
+<Callout type="warn">
+Never commit your `.env` file to version control. Add it to your `.gitignore` file.
+</Callout>
+
+### Simple Encryption
+
+```go title="main.go"
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "github.com/joho/godotenv"
+)
+
+const BaseURL = "https://your-api-domain.com/api/v1/crypto"
+
+type EncryptRequest struct {
+    Data       string `json:"data"`
+    Passphrase string `json:"passphrase"`
+}
+
+type EncryptResponse struct {
+    Success    bool   `json:"success"`
+    StatusCode int    `json:"statusCode"`
+    Message    string `json:"message"`
+    Data       struct {
+        EncryptedOutput string `json:"encrypted_output"`
+    } `json:"data"`
+}
+
+func encryptData(data string) (string, error) {
+    err := godotenv.Load()
+    if err != nil {
+        return "", fmt.Errorf("error loading .env file: %v", err)
+    }
+    
+    projectID := os.Getenv("PROJECT_ID")
+    apiKey := os.Getenv("API_KEY")
+    passphrase := os.Getenv("PASSPHRASE")
+    
+    url := fmt.Sprintf("%s/encrypt/%s", BaseURL, projectID)
+    
+    payload := EncryptRequest{
+        Data:       data,
+        Passphrase: passphrase,
+    }
+    
+    jsonData, err := json.Marshal(payload)
+    if err != nil {
+        return "", err
+    }
+    
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    if err != nil {
+        return "", err
+    }
+    
+    req.Header.Set("x-api-key", apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return "", err
+    }
+    defer resp.Body.Close()
+    
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return "", err
+    }
+    
+    var result EncryptResponse
+    err = json.Unmarshal(body, &result)
+    if err != nil {
+        return "", err
+    }
+    
+    if resp.StatusCode != 200 {
+        return "", fmt.Errorf("encryption failed: %s", result.Message)
+    }
+    
+    fmt.Printf("Encrypted: %s\n", result.Data.EncryptedOutput)
+    return result.Data.EncryptedOutput, nil
+}
+
+func main() {
+    encrypted, err := encryptData("sensitive information to encrypt")
+    if err != nil {
+        fmt.Printf("Error: %v\n", err)
+        return
+    }
+    fmt.Printf("Success: %s\n", encrypted)
+}
+```
+
+### Simple Decryption
+
+```go title="decrypt.go"
+type DecryptRequest struct {
+    Data       string `json:"data"`
+    Passphrase string `json:"passphrase"`
+}
+
+type DecryptResponse struct {
+    Success    bool   `json:"success"`
+    StatusCode int    `json:"statusCode"`
+    Message    string `json:"message"`
+    Data       struct {
+        Plaintext string `json:"plaintext"`
+    } `json:"data"`
+}
+
+func decryptData(encryptedData string) (string, error) {
+    err := godotenv.Load()
+    if err != nil {
+        return "", fmt.Errorf("error loading .env file: %v", err)
+    }
+    
+    projectID := os.Getenv("PROJECT_ID")
+    apiKey := os.Getenv("API_KEY")
+    passphrase := os.Getenv("PASSPHRASE")
+    
+    url := fmt.Sprintf("%s/decrypt/%s", BaseURL, projectID)
+    
+    payload := DecryptRequest{
+        Data:       encryptedData,
+        Passphrase: passphrase,
+    }
+    
+    jsonData, err := json.Marshal(payload)
+    if err != nil {
+        return "", err
+    }
+    
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    if err != nil {
+        return "", err
+    }
+    
+    req.Header.Set("x-api-key", apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return "", err
+    }
+    defer resp.Body.Close()
+    
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return "", err
+    }
+    
+    var result DecryptResponse
+    err = json.Unmarshal(body, &result)
+    if err != nil {
+        return "", err
+    }
+    
+    if resp.StatusCode != 200 {
+        return "", fmt.Errorf("decryption failed: %s", result.Message)
+    }
+    
+    fmt.Printf("Decrypted: %s\n", result.Data.Plaintext)
+    return result.Data.Plaintext, nil
+}
+
+func main() {
+    plaintext, err := decryptData("U2FsdGVkX1+jKX9Z3mHq7vK8pQ2...")
+    if err != nil {
+        fmt.Printf("Error: %v\n", err)
+        return
+    }
+    fmt.Printf("Success: %s\n", plaintext)
+}
+```
+
+### Deep Encryption
+
+```go title="deep_encrypt.go"
+type DeepEncryptRequest struct {
+    Data       interface{} `json:"data"`
+    Passphrase string      `json:"passphrase"`
+}
+
+type DeepEncryptResponse struct {
+    Success    bool   `json:"success"`
+    StatusCode int    `json:"statusCode"`
+    Message    string `json:"message"`
+    Data       struct {
+        Encrypted interface{} `json:"encrypted"`
+        Meta      struct {
+            TotalFields    int     `json:"totalFields"`
+            BillableFields int     `json:"billableFields"`
+            TotalPrice     float64 `json:"totalPrice"`
+        } `json:"meta"`
+    } `json:"data"`
+}
+
+func deepEncrypt(dataObject interface{}) (*DeepEncryptResponse, error) {
+    err := godotenv.Load()
+    if err != nil {
+        return nil, fmt.Errorf("error loading .env file: %v", err)
+    }
+    
+    projectID := os.Getenv("PROJECT_ID")
+    apiKey := os.Getenv("API_KEY")
+    passphrase := os.Getenv("PASSPHRASE")
+    
+    url := fmt.Sprintf("%s/deep_encrypt/%s", BaseURL, projectID)
+    
+    payload := DeepEncryptRequest{
+        Data:       dataObject,
+        Passphrase: passphrase,
+    }
+    
+    jsonData, err := json.Marshal(payload)
+    if err != nil {
+        return nil, err
+    }
+    
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    if err != nil {
+        return nil, err
+    }
+    
+    req.Header.Set("x-api-key", apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+    
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return nil, err
+    }
+    
+    var result DeepEncryptResponse
+    err = json.Unmarshal(body, &result)
+    if err != nil {
+        return nil, err
+    }
+    
+    if resp.StatusCode != 200 {
+        return nil, fmt.Errorf("deep encryption failed: %s", result.Message)
+    }
+    
+    fmt.Printf("Encrypted object: %+v\n", result.Data.Encrypted)
+    fmt.Printf("Metadata: %+v\n", result.Data.Meta)
+    return &result, nil
+}
+
+func main() {
+    userData := map[string]interface{}{
+        "user": map[string]interface{}{
+            "name":  "John Doe",
+            "email": "john@example.com",
+            "ssn":   "123-45-6789",
+        },
+        "payment": map[string]interface{}{
+            "cardNumber": "4111111111111111",
+            "cvv":        "123",
+        },
+    }
+
+    result, err := deepEncrypt(userData)
+    if err != nil {
+        fmt.Printf("Error: %v\n", err)
+        return
+    }
+    fmt.Printf("Success: %+v\n", result)
+}
+```
+
+### Deep Decryption
+
+```go title="deep_decrypt.go"
+type DeepDecryptRequest struct {
+    Encrypted  interface{} `json:"encrypted"`
+    Passphrase string      `json:"passphrase"`
+}
+
+type DeepDecryptResponse struct {
+    Success    bool   `json:"success"`
+    StatusCode int    `json:"statusCode"`
+    Message    string `json:"message"`
+    Data       struct {
+        Data interface{} `json:"data"`
+        Meta struct {
+            TotalFields    int     `json:"totalFields"`
+            BillableFields int     `json:"billableFields"`
+            TotalPrice     float64 `json:"totalPrice"`
+        } `json:"meta"`
+    } `json:"data"`
+}
+
+func deepDecrypt(encryptedObject interface{}) (*DeepDecryptResponse, error) {
+    err := godotenv.Load()
+    if err != nil {
+        return nil, fmt.Errorf("error loading .env file: %v", err)
+    }
+    
+    projectID := os.Getenv("PROJECT_ID")
+    apiKey := os.Getenv("API_KEY")
+    passphrase := os.Getenv("PASSPHRASE")
+    
+    url := fmt.Sprintf("%s/deep_decrypt/%s", BaseURL, projectID)
+    
+    payload := DeepDecryptRequest{
+        Encrypted:  encryptedObject,
+        Passphrase: passphrase,
+    }
+    
+    jsonData, err := json.Marshal(payload)
+    if err != nil {
+        return nil, err
+    }
+    
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    if err != nil {
+        return nil, err
+    }
+    
+    req.Header.Set("x-api-key", apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+    
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return nil, err
+    }
+    
+    var result DeepDecryptResponse
+    err = json.Unmarshal(body, &result)
+    if err != nil {
+        return nil, err
+    }
+    
+    if resp.StatusCode != 200 {
+        return nil, fmt.Errorf("deep decryption failed: %s", result.Message)
+    }
+    
+    fmt.Printf("Decrypted object: %+v\n", result.Data.Data)
+    fmt.Printf("Metadata: %+v\n", result.Data.Meta)
+    
+    return &result, nil
+}
+
+func main() {
+    encryptedData := map[string]interface{}{
+        "user": map[string]interface{}{
+            "name":  "U2FsdGVkX1+abc123...",
+            "email": "U2FsdGVkX1+def456...",
+            "ssn":   "U2FsdGVkX1+ghi789...",
+        },
+        "payment": map[string]interface{}{
+            "cardNumber": "U2FsdGVkX1+jkl012...",
+            "cvv":        "U2FsdGVkX1+mno345...",
+        },
+    }
+    
+    result, err := deepDecrypt(encryptedData)
+    if err != nil {
+        fmt.Printf("Error: %v\n", err)
+        return
+    }
+    fmt.Printf("Success: %+v\n", result)
+}
+```
+
+### Complete Service Package
+
+```go title="encryption/service.go"
+package encryption
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "github.com/joho/godotenv"
+)
+
+type Service struct {
+    BaseURL    string
+    ProjectID  string
+    APIKey     string
+    Passphrase string
+    Client     *http.Client
+}
+
+type EncryptRequest struct {
+    Data       string `json:"data"`
+    Passphrase string `json:"passphrase"`
+}
+
+type DecryptRequest struct {
+    Data       string `json:"data"`
+    Passphrase string `json:"passphrase"`
+}
+
+type DeepEncryptRequest struct {
+    Data       interface{} `json:"data"`
+    Passphrase string      `json:"passphrase"`
+}
+
+type DeepDecryptRequest struct {
+    Encrypted  interface{} `json:"encrypted"`
+    Passphrase string      `json:"passphrase"`
+}
+
+type EncryptResponse struct {
+    Success    bool   `json:"success"`
+    StatusCode int    `json:"statusCode"`
+    Message    string `json:"message"`
+    Data       struct {
+        EncryptedOutput string `json:"encrypted_output"`
+    } `json:"data"`
+}
+
+type DecryptResponse struct {
+    Success    bool   `json:"success"`
+    StatusCode int    `json:"statusCode"`
+    Message    string `json:"message"`
+    Data       struct {
+        Plaintext string `json:"plaintext"`
+    } `json:"data"`
+}
+
+type DeepEncryptResponse struct {
+    Success    bool   `json:"success"`
+    StatusCode int    `json:"statusCode"`
+    Message    string `json:"message"`
+    Data       struct {
+        Encrypted interface{} `json:"encrypted"`
+        Meta      struct {
+            TotalFields    int     `json:"totalFields"`
+            BillableFields int     `json:"billableFields"`
+            TotalPrice     float64 `json:"totalPrice"`
+        } `json:"meta"`
+    } `json:"data"`
+}
+
+type DeepDecryptResponse struct {
+    Success    bool   `json:"success"`
+    StatusCode int    `json:"statusCode"`
+    Message    string `json:"message"`
+    Data       struct {
+        Data interface{} `json:"data"`
+        Meta struct {
+            TotalFields    int     `json:"totalFields"`
+            BillableFields int     `json:"billableFields"`
+            TotalPrice     float64 `json:"totalPrice"`
+        } `json:"meta"`
+    } `json:"data"`
+}
+
+func NewService() (*Service, error) {
+    err := godotenv.Load()
+    if err != nil {
+        return nil, fmt.Errorf("error loading .env file: %v", err)
+    }
+    
+    projectID := os.Getenv("PROJECT_ID")
+    apiKey := os.Getenv("API_KEY")
+    passphrase := os.Getenv("PASSPHRASE")
+    
+    if projectID == "" || apiKey == "" || passphrase == "" {
+        return nil, fmt.Errorf("missing required environment variables")
+    }
+    
+    return &Service{
+        BaseURL:    "https://your-api-domain.com/api/v1/crypto",
+        ProjectID:  projectID,
+        APIKey:     apiKey,
+        Passphrase: passphrase,
+        Client:     &http.Client{},
+    }, nil
+}
+
+func (s *Service) Encrypt(data string) (string, error) {
+    url := fmt.Sprintf("%s/encrypt/%s", s.BaseURL, s.ProjectID)
+    payload := EncryptRequest{Data: data, Passphrase: s.Passphrase}
+    var result EncryptResponse
+    err := s.makeRequest("POST", url, payload, &result)
+    if err != nil {
+        return "", err
+    }
+    return result.Data.EncryptedOutput, nil
+}
+
+func (s *Service) Decrypt(encryptedData string) (string, error) {
+    url := fmt.Sprintf("%s/decrypt/%s", s.BaseURL, s.ProjectID)
+    payload := DecryptRequest{Data: encryptedData, Passphrase: s.Passphrase}
+    var result DecryptResponse
+    err := s.makeRequest("POST", url, payload, &result)
+    if err != nil {
+        return "", err
+    }
+    return result.Data.Plaintext, nil
+}
+
+func (s *Service) DeepEncrypt(data interface{}) (*DeepEncryptResponse, error) {
+    url := fmt.Sprintf("%s/deep_encrypt/%s", s.BaseURL, s.ProjectID)
+    payload := DeepEncryptRequest{Data: data, Passphrase: s.Passphrase}
+    var result DeepEncryptResponse
+    err := s.makeRequest("POST", url, payload, &result)
+    if err != nil {
+        return nil, err
+    }
+    return &result, nil
+}
+
+func (s *Service) DeepDecrypt(encrypted interface{}) (*DeepDecryptResponse, error) {
+    url := fmt.Sprintf("%s/deep_decrypt/%s", s.BaseURL, s.ProjectID)
+    payload := DeepDecryptRequest{Encrypted: encrypted, Passphrase: s.Passphrase}
+    var result DeepDecryptResponse
+    err := s.makeRequest("POST", url, payload, &result)
+    if err != nil {
+        return nil, err
+    }
+    return &result, nil
+}
+
+func (s *Service) makeRequest(method, url string, payload interface{}, result interface{}) error {
+    jsonData, err := json.Marshal(payload)
+    if err != nil {
+        return fmt.Errorf("error marshaling payload: %v", err)
+    }
+    
+    req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonData))
+    if err != nil {
+        return fmt.Errorf("error creating request: %v", err)
+    }
+    
+    req.Header.Set("x-api-key", s.APIKey)
+    req.Header.Set("Content-Type", "application/json")
+    
+    resp, err := s.Client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error making request: %v", err)
+    }
+    defer resp.Body.Close()
+    
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return fmt.Errorf("error reading response: %v", err)
+    }
+    
+    if resp.StatusCode != 200 {
+        var errorResp struct { Message string `json:"message"` }
+        json.Unmarshal(body, &errorResp)
+        return fmt.Errorf("request failed (status %d): %s", resp.StatusCode, errorResp.Message)
+    }
+    
+    err = json.Unmarshal(body, result)
+    if err != nil {
+        return fmt.Errorf("error unmarshaling response: %v", err)
+    }
+    
+    return nil
+}
+```
+
+### Usage Example
+
+```go title="main.go"
+package main
+
+import (
+    "fmt"
+    "your-module/encryption"
+)
+
+func main() {
+    service, err := encryption.NewService()
+    if err != nil {
+        fmt.Printf("Error creating service: %v\n", err)
+        return
+    }
+    
+    // Simple encryption/decryption
+    fmt.Println("=== Simple Encryption/Decryption ===")
+    encrypted, err := service.Encrypt("my-secret-password")
+    if err != nil {
+        fmt.Printf("Encryption error: %v\n", err)
+        return
+    }
+    fmt.Printf("Encrypted: %s\n", encrypted)
+    
+    decrypted, err := service.Decrypt(encrypted)
+    if err != nil {
+        fmt.Printf("Decryption error: %v\n", err)
+        return
+    }
+    fmt.Printf("Decrypted: %s\n", decrypted)
+    
+    // Deep encryption/decryption
+    fmt.Println("\n=== Deep Encryption/Decryption ===")
+    userData := map[string]interface{}{
+        "user": map[string]interface{}{
+            "name": "John Doe", 
+            "email": "john@example.com",
+        },
+        "payment": map[string]interface{}{
+            "cardNumber": "4111111111111111",
+        },
+    }
+    
+    deepEncResult, err := service.DeepEncrypt(userData)
+    if err != nil {
+        fmt.Printf("Deep encryption error: %v\n", err)
+        return
+    }
+    fmt.Printf("Encrypted: %+v\n", deepEncResult.Data.Encrypted)
+    fmt.Printf("Metadata: %+v\n", deepEncResult.Data.Meta)
+    
+    deepDecResult, err := service.DeepDecrypt(deepEncResult.Data.Encrypted)
+    if err != nil {
+        fmt.Printf("Deep decryption error: %v\n", err)
+        return
+    }
+    fmt.Printf("Decrypted: %+v\n", deepDecResult.Data.Data)
+}
+```
+
+### Error Handling
+
+```go title="error_handling.go"
+func encryptWithErrorHandling(data string) (string, error) {
+    err := godotenv.Load()
+    if err != nil {
+        return "", fmt.Errorf("error loading .env file: %v", err)
+    }
+    
+    projectID := os.Getenv("PROJECT_ID")
+    apiKey := os.Getenv("API_KEY")
+    passphrase := os.Getenv("PASSPHRASE")
+    
+    url := fmt.Sprintf("%s/encrypt/%s", BaseURL, projectID)
+    
+    payload := EncryptRequest{
+        Data:       data,
+        Passphrase: passphrase,
+    }
+    
+    jsonData, err := json.Marshal(payload)
+    if err != nil {
+        return "", fmt.Errorf("marshaling error: %v", err)
+    }
+    
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    if err != nil {
+        return "", fmt.Errorf("request creation error: %v", err)
+    }
+    
+    req.Header.Set("x-api-key", apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return "", fmt.Errorf("request error: %v", err)
+    }
+    defer resp.Body.Close()
+    
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return "", fmt.Errorf("reading response error: %v", err)
+    }
+    
+    var result EncryptResponse
+    err = json.Unmarshal(body, &result)
+    if err != nil {
+        return "", fmt.Errorf("unmarshal error: %v", err)
+    }
+    
+    if resp.StatusCode != 200 {
+        switch resp.StatusCode {
+        case 400:
+            return "", fmt.Errorf("bad request: %s", result.Message)
+        case 401:
+            return "", fmt.Errorf("unauthorized: check your API key")
+        case 403:
+            return "", fmt.Errorf("forbidden: check your project ID")
+        case 500:
+            return "", fmt.Errorf("server error: %s", result.Message)
+        default:
+            return "", fmt.Errorf("error %d: %s", resp.StatusCode, result.Message)
+        }
+    }
+    
+    return result.Data.EncryptedOutput, nil
+}
+```

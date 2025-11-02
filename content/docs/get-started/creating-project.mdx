@@ -1,15 +1,12 @@
 ---
 title: Creating a Project
-description: Set up your first Cipherion project and configure security policies
+description: Set up your first Cipherion project and configure security policies to start protecting your data.
 ---
 
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Card, Cards } from 'fumadocs-ui/components/card';
-
-# Creating a Project
-
-Set up your first Cipherion project and configure security policies to start protecting your data.
+import { Shield, Lock, Eye, Key, Code, FileText, BookOpen, Package, Heart, CreditCard, HeartPlus } from 'lucide-react';
 
 <Callout title="Prerequisites">
 Ensure your account setup is complete and you have organization admin privileges.
@@ -44,17 +41,34 @@ Define data types and sensitivity levels
 
 #### Configure Data Types:
 
-**Personal Identifiable Information (PII)**  
-Names • Emails • Phone Numbers • Addresses
+**Personal Identifiable Information (PII)**
+<div className="flex gap-2 flex-wrap my-4">
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Names</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Emails</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Phone Numbers</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Addresses</span>
+</div>
 
-**Payment Card Information (PCI)**  
-Card Numbers • CVV • Expiry Dates
+**Payment Card Information (PCI)**
+<div className="flex gap-2 flex-wrap my-4">
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Card Numbers</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">CVV</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Expiry Dates</span>
+</div>
 
-**Protected Health Information (PHI)**  
-Medical Records • Patient IDs • Diagnoses
+**Protected Health Information (PHI)**
+<div className="flex gap-2 flex-wrap my-4">
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Medical Records</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Patient IDs</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Diagnoses</span>
+</div>
 
-**Financial Data**  
-Account Numbers • SSN • Tax IDs
+**Financial Data**
+<div className="flex gap-2 flex-wrap my-4">
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Account Numbers</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">SSN</span>
+  <span className="px-3 py-1 bg-gray-800 text-white-600 rounded-md text-sm">Tax IDs</span>
+</div>
 </Step>
 
 <Step>
@@ -95,16 +109,16 @@ Configure regulatory compliance and data location requirements
 #### Compliance Frameworks
 
 <Cards>
-  <Card title="GDPR" icon="Shield">
+  <Card title="GDPR" icon={<Shield />}>
     EU General Data Protection Regulation
   </Card>
-  <Card title="HIPAA" icon="Heart">
+  <Card title="HIPAA" icon={<HeartPlus />}>
     Health Insurance Portability Act
   </Card>
-  <Card title="CreditCard" icon="CreditCard">
+  <Card title="CreditCard" icon={<CreditCard />}>
     Payment Card Industry Standards
   </Card>
-  <Card title="SOX" icon="FileText">
+  <Card title="SOX" icon={<FileText />}>
     Sarbanes-Oxley Act
   </Card>
 </Cards>
@@ -120,11 +134,12 @@ Select a region where your data will be processed and stored.
 Review settings and activate your project
 
 **Final Review Checklist:**
-- ✓ Project name and description configured
-- ✓ Data classification and sensitivity levels defined
-- ✓ Security policies and encryption methods selected
-- ✓ Compliance frameworks and data residency configured
-- ✓ Access controls and audit settings enabled
+
+- Project name and description configured
+- Data classification and sensitivity levels defined
+- Security policies and encryption methods selected
+- Compliance frameworks and data residency configured
+- Access controls and audit settings enabled
 </Step>
 </Steps>
 

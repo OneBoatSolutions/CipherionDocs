@@ -1,0 +1,777 @@
+---
+title: JavaScript SDK
+description: A robust JavaScript/TypeScript SDK for the Cipherion Encryption API - Secure, Scalable, and Enterprise-Ready
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Shield, Lock, Eye, Key, Code, FileText, BookOpen, Package, Heart, CreditCard, Check, Rocket, Zap } from 'lucide-react';
+
+## Features
+
+<Cards>
+  <Card title="Complete Encryption Suite" icon={<Shield />}>
+    Basic and deep object encryption/decryption with enterprise-grade security
+  </Card>
+  <Card title="Enterprise Ready" icon={<Rocket />}>
+    Built-in logging, error handling, and retry mechanisms for production use
+  </Card>
+  <Card title="Migration Tools" icon={<Package />}>
+    Batch processing with queue and background worker support for large datasets
+  </Card>
+  <Card title="Type Safe" icon={<Check />}>
+    Full TypeScript support with comprehensive type definitions
+  </Card>
+  <Card title="Compliance Logging" icon={<BookOpen />}>
+    Structured logging for audit and compliance requirements
+  </Card>
+  <Card title="High Performance" icon={<Zap />}>
+    Optimized for large-scale data processing with memory management
+  </Card>
+</Cards>
+
+## Quick Start
+
+### Installation
+
+```bash
+npm i @cipherion/client
+# or
+yarn add @cipherion/client
+```
+
+### Credentials Setup
+
+<Steps>
+  <Step>
+    Log in to your [Cipherion Dashboard](https://dashboard.cipherion.in)
+  </Step>
+  <Step>
+    Navigate to Project Settings
+  </Step>
+  <Step>
+    Generate or retrieve your Project ID and API Key
+  </Step>
+  <Step>
+    Create a passphrase (minimum 12 characters) and store it securely
+  </Step>
+  <Step>
+    **CRITICAL:** Use the same passphrase when generating encryption keys in the dashboard and in your application
+  </Step>
+</Steps>
+
+### Environment Setup
+
+Create a `.env` file in your project root:
+
+```bash title=".env"
+CIPHERION_BASE_URL=https://api.cipherion.cloud/api/v1/crypto
+CIPHERION_PROJECT_ID=proj_your_project_id
+CIPHERION_API_KEY=your_api_key_here
+CIPHERION_PASSPHRASE=your_secure_passphrase_here
+```
+
+### Configuration Interface
+
+```typescript
+interface CipherionConfig {
+  baseUrl: string;           // API base URL
+  projectId: string;         // Your project ID from dashboard
+  apiKey: string;            // Your API key from dashboard
+  passphrase: string;        // Your encryption passphrase (min 12 chars)
+  timeout?: number;          // Request timeout (default: 30000ms)
+  retries?: number;          // Retry attempts (default: 3)
+  logLevel?: 'error' | 'warn' | 'info' | 'debug';
+  enableLogging?: boolean;   // Enable logging (default: true)
+}
+```
+
+### Basic Usage
+
+```javascript
+const { CipherionClient } = require('cipherion-client');
+
+// Initialize client
+const client = new CipherionClient();
+
+async function example() {
+  try {
+    // Basic string encryption
+    const encrypted = await client.encrypt("Hello, World!");
+    console.log('Encrypted:', encrypted);
+
+    // Basic string decryption
+    const decrypted = await client.decrypt(encrypted);
+    console.log('Decrypted:', decrypted);
+
+    // Deep object encryption
+    const userData = {
+      name: "John Doe",
+      email: "john@example.com",
+      ssn: "123-45-6789"
+    };
+
+    const deepEncrypted = await client.deepEncrypt(userData);
+    const deepDecrypted = await client.deepDecrypt(deepEncrypted.encrypted);
+
+    console.log('Original:', userData);
+    console.log('Decrypted:', deepDecrypted.data);
+
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
+
+example();
+```
+
+### TypeScript Usage
+
+```typescript
+import { CipherionClient, CipherionConfig } from 'cipherion-client';
+
+interface UserData {
+  id: number;
+  name: string;
+  email: string;
+}
+
+const config: CipherionConfig = {
+  baseUrl: process.env.CIPHERION_BASE_URL!,
+  projectId: process.env.CIPHERION_PROJECT_ID!,
+  apiKey: process.env.CIPHERION_API_KEY!,
+  passphrase: process.env.CIPHERION_PASSPHRASE!,
+  logLevel: 'info'
+};
+
+const client = new CipherionClient(config);
+
+const userData: UserData = {
+  id: 1,
+  name: "Jane Smith",
+  email: "jane@example.com"
+};
+
+const result = await client.deepEncrypt(userData);
+```
+
+## API Reference
+
+### Core Methods
+
+#### encrypt(data: string)
+
+Encrypts a string using basic encryption.
+
+**Returns:** `Promise<string>`
+
+```javascript
+const encrypted = await cipherion.encrypt('Hello, World!');
+// Returns: encrypted string
+```
+
+#### decrypt(encryptedData: string)
+
+Decrypts a string that was encrypted using `encrypt()`.
+
+**Returns:** `Promise<string>`
+
+```javascript
+const decrypted = await cipherion.decrypt(encryptedData);
+// Returns: 'Hello, World!'
+```
+
+### Deep Encryption & Decryption
+
+#### deepEncrypt(data: any)
+
+Encrypts complex data structures while preserving their structure.
+
+**Returns:** `Promise<DeepEncryptResponse['data']>`
+
+```javascript
+const userData = {
+  name: 'John Doe',
+  email: 'john@example.com',
+  address: { street: '123 Main St', city: 'New York' },
+  creditCards: ['4111111111111111', '5500000000000004']
+};
+
+const encrypted = await cipherion.deepEncrypt(userData);
+// Returns: encrypted structure with meta data
+```
+
+#### deepDecrypt(encryptedData: any)
+
+Decrypts data that was encrypted using `deepEncrypt()`.
+
+**Returns:** `Promise<DeepDecryptResponse['data']>`
+
+```javascript
+const decrypted = await cipherion.deepDecrypt(encrypted.encrypted);
+// Returns: original data structure with meta data
+```
+
+### Migration Methods
+
+#### migrateEncrypt(dataArray, options?)
+
+Batch encrypts an array of data items with progress tracking. Useful for migrating existing databases.
+
+**Parameters:**
+- `dataArray: any[]` - Array of items to encrypt
+- `options?: MigrationOptions` - Optional configuration
+
+**Returns:** `Promise<MigrationResult>`
+
+```typescript
+const users = [
+  { name: 'User 1', email: 'user1@example.com' },
+  { name: 'User 2', email: 'user2@example.com' },
+  // ... more users
+];
+
+const result = await cipherion.migrateEncrypt(users, {
+  batchSize: 10,
+  delayBetweenBatches: 1000,
+  maxRetries: 3,
+  onProgress: (progress) => {
+    console.log(`Progress: ${progress.percentage}%`);
+  },
+  onError: (error, item) => {
+    console.error('Failed to encrypt:', item, error);
+  }
+});
+
+// Returns:
+{
+  successful: [ /* encrypted items */ ],
+  failed: [ /* failed items with errors */ ],
+  summary: {
+  total: 100,
+  processed: 100,
+  successful: 98,
+  failed: 2,
+  percentage: 100
+  }
+}
+```
+
+#### migrateDecrypt(encryptedArray, options?)
+
+Batch decrypts an array of encrypted data items.
+
+**Parameters:**
+- `encryptedArray: any[]` - Array of encrypted items
+- `options?: MigrationOptions` - Optional configuration
+
+**Returns:** `Promise<MigrationResult>`
+
+```typescript
+const result = await cipherion.migrateDecrypt(encryptedUsers, {
+  batchSize: 10,
+  onProgress: (progress) => {
+    console.log(`Decrypted: ${progress.successful} of ${progress.total}`);
+  }
+});
+```
+
+### Configuration Methods
+
+#### getConfig()
+
+Returns current configuration without sensitive data.
+
+**Returns:** `Omit<CipherionConfig, 'apiKey' | 'passphrase'>`
+
+```typescript
+const config = cipherion.getConfig();
+console.log(config.projectId); // Safe to log
+```
+
+#### updateConfig(newConfig)
+
+Updates client configuration.
+
+**Parameters:**
+- `newConfig: Partial<CipherionConfig>` - Partial configuration to update
+
+**Returns:** `void`
+
+```typescript
+cipherion.updateConfig({
+  timeout: 60000,
+  logLevel: 'debug'
+});
+```
+
+## Integration Examples
+
+### Express.js Integration
+
+<Tabs items={['Config', 'App', 'Middleware']}>
+  <Tab value="Config">
+```typescript title="src/config/cipherion.ts"
+import { CipherionClient } from '@cipherion/client';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export const cipherion = new CipherionClient({
+  baseUrl: process.env.CIPHERION_BASE_URL!,
+  projectId: process.env.CIPHERION_PROJECT_ID!,
+  apiKey: process.env.CIPHERION_API_KEY!,
+  passphrase: process.env.CIPHERION_PASSPHRASE!,
+});
+```
+  </Tab>
+  
+  <Tab value="App">
+```typescript title="src/app.ts"
+import express from 'express';
+import { cipherion } from './config/cipherion';
+
+const app = express();
+app.use(express.json());
+
+// Encrypt user data endpoint
+app.post('/api/users', async (req, res) => {
+  try {
+    const { name, email, ssn, creditCard } = req.body;
+    
+    const encrypted = await cipherion.deepEncrypt({
+      name,
+      email,
+      ssn,
+      creditCard
+    });
+    
+    res.json({
+      success: true,
+      data: encrypted.encrypted,
+      meta: encrypted.meta
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Decrypt user data endpoint
+app.get('/api/users/:id', async (req, res) => {
+  try {
+    const encryptedData = await getUserFromDB(req.params.id);
+    const decrypted = await cipherion.deepDecrypt(encryptedData);
+    
+    res.json({
+      success: true,
+      data: decrypted.data
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+```
+  </Tab>
+  
+  <Tab value="Middleware">
+```typescript title="Encryption Middleware"
+// Middleware for encrypting response data
+const encryptMiddleware = async (req, res, next) => {
+  const originalJson = res.json.bind(res);
+  
+  res.json = async function(data) {
+    if (data.sensitive) {
+      const encrypted = await cipherion.deepEncrypt(data.sensitive);
+      data.sensitive = encrypted.encrypted;
+    }
+    originalJson(data);
+  };
+  
+  next();
+};
+
+app.use(encryptMiddleware);
+```
+  </Tab>
+</Tabs>
+
+### NestJS Integration
+
+<Tabs items={['Module', 'Service', 'Controller', 'App Module']}>
+  <Tab value="Module">
+```typescript title="src/cipherion/cipherion.module.ts"
+import { Module, Global } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { CipherionService } from './cipherion.service';
+
+@Global()
+@Module({
+  imports: [ConfigModule],
+  providers: [CipherionService],
+  exports: [CipherionService],
+})
+export class CipherionModule {}
+```
+  </Tab>
+  
+  <Tab value="Service">
+```typescript title="src/cipherion/cipherion.service.ts"
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { CipherionClient } from '@cipherion/client';
+
+@Injectable()
+export class CipherionService implements OnModuleInit {
+  private client: CipherionClient;
+
+  constructor(private configService: ConfigService) {}
+
+  onModuleInit() {
+    this.client = new CipherionClient({
+      baseUrl: this.configService.get('CIPHERION_BASE_URL'),
+      projectId: this.configService.get('CIPHERION_PROJECT_ID'),
+      apiKey: this.configService.get('CIPHERION_API_KEY'),
+      passphrase: this.configService.get('CIPHERION_PASSPHRASE'),
+    });
+  }
+
+  async encrypt(data: string): Promise<string> {
+    return this.client.encrypt(data);
+  }
+
+  async decrypt(encryptedData: string): Promise<string> {
+    return this.client.decrypt(encryptedData);
+  }
+
+  async deepEncrypt(data: any) {
+    return this.client.deepEncrypt(data);
+  }
+
+  async deepDecrypt(encryptedData: any) {
+    return this.client.deepDecrypt(encryptedData);
+  }
+}
+```
+  </Tab>
+  
+  <Tab value="Controller">
+```typescript title="src/users/users.controller.ts"
+import { Controller, Post, Get, Body, Param } from '@nestjs/common';
+import { CipherionService } from '../cipherion/cipherion.service';
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly cipherionService: CipherionService) {}
+
+  @Post()
+  async createUser(@Body() userData: any) {
+    try {
+      const encrypted = await this.cipherionService.deepEncrypt({
+        name: userData.name,
+        email: userData.email,
+        ssn: userData.ssn,
+        creditCard: userData.creditCard,
+      });
+
+      return {
+        success: true,
+        data: encrypted.encrypted,
+        meta: encrypted.meta,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  @Get(':id')
+  async getUser(@Param('id') id: string) {
+    try {
+      const encryptedData = await getUserFromDB(id);
+      const decrypted = await this.cipherionService.deepDecrypt(encryptedData);
+
+      return {
+        success: true,
+        data: decrypted.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+}
+```
+  </Tab>
+  
+  <Tab value="App Module">
+```typescript title="src/app.module.ts"
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { CipherionModule } from './cipherion/cipherion.module';
+import { UsersModule } from './users/users.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    CipherionModule,
+    UsersModule,
+  ],
+})
+export class AppModule {}
+```
+  </Tab>
+</Tabs>
+
+### Node.js Examples
+<Card icon={<Code />}>
+  Checkout the [NodeJS examples →](https://github.com/OneBoatSolutions/Cipherion-Code-Example/tree/main/NodeJs)
+</Card>
+
+## Migration & Batch Processing
+
+Perfect for enterprise scenarios requiring large-scale data processing.
+
+### Database Migration Example
+
+```typescript title="migrate-to-encryption.ts"
+import { CipherionClient } from '@cipherion/client';
+import { connectToDatabase, User } from './database';
+
+async function migrateUsers() {
+  const cipherion = new CipherionClient();
+  const db = await connectToDatabase();
+  
+  // Fetch all users from database
+  const users = await db.collection('users').find().toArray();
+  
+  console.log(`Starting migration for ${users.length} users...`);
+  
+  const result = await cipherion.migrateEncrypt(users, {
+    batchSize: 50,
+    delayBetweenBatches: 2000,
+    maxRetries: 3,
+    onProgress: (progress) => {
+      console.log(
+        `Progress: ${progress.percentage}% (${progress.successful} successful, ${progress.failed} failed)`
+      );
+    },
+    onError: (error, item) => {
+      console.error(`Failed to encrypt user ${item._id}:`, error.message);
+    }
+  });
+  
+  // Update database with encrypted data
+  for (const encryptedUser of result.successful) {
+    await db.collection('users').updateOne(
+      { _id: encryptedUser.encrypted._id },
+      { $set: { data: encryptedUser.encrypted } }
+    );
+  }
+  
+  console.log('\nMigration Summary:');
+  console.log(`Total: ${result.summary.total}`);
+  console.log(`Successful: ${result.summary.successful}`);
+  console.log(`Failed: ${result.summary.failed}`);
+  
+  // Handle failed items
+  if (result.failed.length > 0) {
+    console.log('\nFailed items:', result.failed);
+  }
+}
+
+migrateUsers().catch(console.error);
+```
+
+### Best Practices for Large-Scale Migrations
+
+<Callout type="info">
+1. **Start with a small batch** to test your migration setup
+2. **Use appropriate batch sizes** (10-50 items recommended)
+3. **Add delays between batches** to avoid rate limiting
+4. **Implement progress tracking** for monitoring
+5. **Log all errors** for troubleshooting
+6. **Keep backups** of original data before migration
+</Callout>
+
+### Background Job Migration (Bull Queue)
+
+```typescript
+import Queue from 'bull';
+import CipherionClient from '@cipherion/client';
+
+const encryptionQueue = new Queue('encryption', {
+  redis: { host: 'localhost', port: 6379 }
+});
+
+// Add jobs to queue
+async function queueEncryptionJobs(users) {
+  for (const user of users) {
+    await encryptionQueue.add('encrypt-user', { user });
+  }
+}
+
+// Process jobs
+encryptionQueue.process('encrypt-user', async (job) => {
+  const cipherion = new CipherionClient();
+  const { user } = job.data;
+  
+  try {
+    const encrypted = await cipherion.deepEncrypt(user);
+    await updateDatabase(user.id, encrypted.encrypted);
+    return { success: true };
+  } catch (error) {
+    throw error; // Will be retried by Bull
+  }
+});
+
+// Monitor progress
+encryptionQueue.on('completed', (job) => {
+  console.log(`User ${job.data.user.id} encrypted successfully`);
+});
+
+encryptionQueue.on('failed', (job, err) => {
+  console.error(`Failed to encrypt user ${job.data.user.id}:`, err);
+});
+```
+
+## Error Handling
+
+### CipherionError Class
+
+```typescript
+class CipherionError extends Error {
+  statusCode: number;
+  details?: string;
+  originalError?: Error;
+}
+```
+
+### Error Handling Examples
+
+```typescript
+import { CipherionError } from '@cipherion/client';
+
+try {
+  const encrypted = await cipherion.encrypt(data);
+} catch (error) {
+  if (error instanceof CipherionError) {
+    console.error('Cipherion Error:', {
+      message: error.message,
+      statusCode: error.statusCode,
+      details: error.details
+    });
+    
+    // Handle specific errors
+    switch (error.statusCode) {
+      case 400:
+        // Invalid request (e.g., missing passphrase)
+        break;
+      case 401:
+        // Unauthorized (invalid API key)
+        break;
+      case 429:
+        // Rate limit exceeded
+        break;
+      case 500:
+        // Server error
+        break;
+    }
+  }
+}
+```
+
+### Express Error Handling Middleware
+
+```typescript
+app.use((error, req, res, next) => {
+  if (error instanceof CipherionError) {
+    return res.status(error.statusCode).json({
+      success: false,
+      error: error.message,
+      details: error.details
+    });
+  }
+  
+  res.status(500).json({
+    success: false,
+    error: 'Internal server error'
+  });
+});
+```
+
+### NestJS Exception Filter
+
+```typescript
+import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/common';
+import { CipherionError } from '@cipherion/client';
+
+@Catch(CipherionError)
+export class CipherionExceptionFilter implements ExceptionFilter {
+  catch(exception: CipherionError, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    
+    response.status(exception.statusCode || HttpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      statusCode: exception.statusCode,
+      message: exception.message,
+      details: exception.details,
+    });
+  }
+}
+
+// Apply globally
+app.useGlobalFilters(new CipherionExceptionFilter());
+```
+
+## Security Best Practices
+
+<Callout type="warning">
+1. **Never hardcode credentials** - Always use environment variables
+2. **Use the same passphrase** that was used to generate keys in the Cipherion dashboard
+3. **Rotate passphrases regularly** and re-encrypt data when doing so
+4. **Restrict API key permissions** in the dashboard to minimum required access
+5. **Enable logging in production** for audit trails
+6. **Implement rate limiting** on your endpoints to prevent abuse
+7. **Use HTTPS** for all API communications
+8. **Store encrypted data separately** from encryption keys
+9. **Implement access controls** for decryption operations
+10. **Monitor usage and costs** through the Cipherion dashboard
+</Callout>
+
+## Logging
+
+The SDK automatically logs operations to `cipherion-logs/` directory:
+- `error.log` - Error-level logs only
+- `combined.log` - All logs
+
+```typescript
+const cipherion = new CipherionClient({
+  logLevel: 'debug', // 'error' | 'warn' | 'info' | 'debug'
+  enableLogging: true
+});
+```
+
+## Support
+
+- **Documentation:** https://docs.cipherion.in
+- **Dashboard:** https://dashboard.cipherion.in
+- **Support:** support@cipherion.in
